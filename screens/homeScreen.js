@@ -47,22 +47,6 @@ export default function HomeScreen({ navigation }) {
         keys = await AsyncStorage.getAllKeys()
   
       } catch{}
-      //console.log(keys);
-    
-
-      // var tempObj= {
-      //   "id": String,
-      //   "videoURI": String,
-      // }
-
-      // const posts = async() => {
-      //   try {
-      //    return await AsyncStorage.getItem(post);
-          
-          
-      //   } catch{}
-      // }
-
         
 
       for (var i = 0; i < keys.length; i++) {
@@ -109,21 +93,29 @@ export default function HomeScreen({ navigation }) {
   //   <Item title={item.videoURI} />
   // );
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={posts.videoURI}
-        renderItem={({item}) =>
-        <Post uri={item.videoURI}>{item.videoURI}</Post>
-      }
-        keyExtractor={item => item.id}
-        showsVerticalScrollIndicator={false}
-        snapToInterval = {Dimensions.get('window').height - 180}
-        snapToAlignment={'start'}
-        decelerationRate={'fast'}
-      />
-    </SafeAreaView>
-  );
+  if (isRender.length === 0) {
+    <View>
+      No posts yet!
+      </View>
+
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={toRender}
+          renderItem={({item}) =>
+          <Post uri={item.videoURI}>{item.videoURI}</Post>
+        }
+          keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={false}
+          snapToInterval = {Dimensions.get('window').height - 180}
+          snapToAlignment={'start'}
+          decelerationRate={'fast'}
+        />
+      </SafeAreaView>
+    );
+
+  }
   // return (
     
     // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>  
