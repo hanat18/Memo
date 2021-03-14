@@ -78,7 +78,7 @@ export default function CreateScreen({ navigation }) {
   const goHomeScreen =  async () => {
 
     try {
-      await AsyncStorage.setItem('loza', image);
+      await AsyncStorage.setItem('videoURI', image);
     } catch {}
 
     try {

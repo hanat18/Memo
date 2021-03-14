@@ -12,8 +12,6 @@ export default function App() {
 
     try {
       await AsyncStorage.setItem('posts', 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4');
-      await AsyncStorage.setItem('posts', 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4');
-      await AsyncStorage.setItem('posts', 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4');
     } catch {}
   }
 

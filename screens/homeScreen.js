@@ -13,83 +13,88 @@ import { useEffect } from 'react';
 import { useState } from 'react/cjs/react.development';
 
 export default function HomeScreen({ navigation }) {
-  const [isLoading, setisLoading] = useState(false);
+  const [finishLoading, setfinishLoading] = useState(false);
+  // const [toRender, setToRender] = useState([
+  //   {
+  //     id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+  //     title: 'First Item',
+  //     videoURI: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+  //   },
+  //   {
+  //     id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+  //     title: 'Second Item',
+  //     videoURI: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+  //   },
+  //   {
+  //     id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //     title: 'Third Item',
+  //     videoURI: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4'
+  //   },
+  // ]);
 
   var toRender = [];
+  var tempObj = {};
 
-  //Here, we are loading in the preset posts (initially set in App.js)
+
+  useEffect(() => {
     const loadData =  async () => {
-      var keys; 
-      var uri;
+    var keys; 
+    var uri;
 
+    try {
+      keys = await AsyncStorage.getAllKeys()
+    } catch{}
+      
+
+    //Loops through all keys and retrieves the attaches URIs
+    for (var i = 0; i < keys.length; i++) {
+      let post = keys[i];
+      
       try {
-        keys = await AsyncStorage.getAllKeys()
-      } catch{}
-        
-
-      //Loops through all keys and retrieves the attaches URIs
-      for (var i = 0; i < keys.length; i++) {
-        let post = keys[i];
-        
-
-        try {
-          uri = await AsyncStorage.getItem(post);
-          
-          
-        } catch{}
+        uri = await AsyncStorage.getItem(post);
 
         if (uri != null){
-            tempObj = {
+          tempObj = {
             'id': post,
             "videoURI": uri,
           }
           //Dynamically creates a "toRender" object and stores it in state
           toRender.push(tempObj)
-        }
+          }
+         
         
+      } catch(e){
+        console.log("ERROR: ", e)
+      }
       }
 
-      //Once finished, updates the page to "hopefuly" force the page to reloud
-      setisLoading(true);
+      setfinishLoading(true);
     }
 
-    //Runs our toLoad functiomn
     loadData();
-    
-  
-  
+  }, [finishLoading]);
+
   const Item = ({ title }) => (
       <Post uri={title}>{title}</Post>
   );
 
+
   const renderItem = ({ item }) => (
     <Item title={item.videoURI} />
   );
-
-  if (toRender.length === 0) {
-    return (
-      <Text>
-      No posts yet!
-      </Text>
-    )
-
-  } else {
-    return (
-      <SafeAreaView style={styles.container}>
-        <FlatList
-          data={toRender}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-          showsVerticalScrollIndicator={false}
-          snapToInterval = {Dimensions.get('window').height - 180}
-          snapToAlignment={'start'}
-          decelerationRate={'fast'}
-        />
-      </SafeAreaView>
-    );
-
-    }
-    
+  return (
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={toRender}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        showsVerticalScrollIndicator={false}
+        snapToInterval = {Dimensions.get('window').height - 180}
+        snapToAlignment={'start'}
+        decelerationRate={'fast'}
+      />
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
