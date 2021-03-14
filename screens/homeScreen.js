@@ -162,13 +162,7 @@ export default function HomeScreen({ navigation }) {
         decelerationRate={'fast'}
       /> */}
 
-      
-      {/* <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate('Albums')}
-      />  */}
-    // </View>
-  // );
+    
 }
 
 const styles = StyleSheet.create({
