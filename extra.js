@@ -13,9 +13,31 @@ import { useEffect } from 'react';
 import { useState } from 'react/cjs/react.development';
 
 export default function HomeScreen({ navigation }) {
+
+
+  // const [toRender, setToRender] = useState({data:[]});
   const [isLoading, setisLoading] = useState(false);
 
   var toRender = [];
+
+  // const DATA = [
+  //     {
+  //       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+  //       title: 'First Item',
+  //       videoURI: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
+  //     },
+  //     {
+  //       id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+  //       title: 'Second Item',
+  //       videoURI: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+  //     },
+  //     {
+  //       id: '58694a0f-3da1-471f-bd96-145571e29d72',
+  //       title: 'Third Item',
+  //       videoURI: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4'
+  //     },
+  //   ];
+
 
   //Here, we are loading in the preset posts (initially set in App.js)
     const loadData =  async () => {
@@ -39,6 +61,9 @@ export default function HomeScreen({ navigation }) {
         } catch{}
 
         if (uri != null){
+            // setToRender({
+            //   data: [...toRender.data.videoURI, ...posts.uri],
+            // })
             tempObj = {
             'id': post,
             "videoURI": uri,
@@ -88,7 +113,24 @@ export default function HomeScreen({ navigation }) {
       </SafeAreaView>
     );
 
-    }
+  }
+  // return (
+    
+    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>  
+      
+
+      {/* //<Post></Post> */}
+      
+      {/* <FlatList 
+        data = {posts}
+        renderItem={() => <Post></Post> }
+        // renderItem={({item}) => <Post post={item} />}
+        showVerticalScrollIndicator = {false}
+        snapToInterval = {Dimensions.get('window').height - 80}
+        snapToAlignment={'start'}
+        decelerationRate={'fast'}
+      /> */}
+
     
 }
 
@@ -107,3 +149,5 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
+
+
