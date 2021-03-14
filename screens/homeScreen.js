@@ -36,16 +36,14 @@ export default function HomeScreen({ navigation }) {
   //     },
   //   ];
 
- 
-  //Method 1
 
+  //Here, we are loading in the preset posts (initially set in App.js)
     const loadData =  async () => {
       var keys; 
       var uri;
 
       try {
         keys = await AsyncStorage.getAllKeys()
-  
       } catch{}
         
 
@@ -69,11 +67,6 @@ export default function HomeScreen({ navigation }) {
           }
           toRender.push(tempObj)
         }
-
-        
-        // tempObj["id"] = post;
-        // tempObj["videoURI"] = uri;
-        // toRender.push(tempObj) 
         
       }
 
