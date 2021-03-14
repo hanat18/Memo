@@ -13,14 +13,10 @@ import { useEffect } from 'react';
 import { useState } from 'react/cjs/react.development';
 
 export default function HomeScreen({ navigation }) {
-  // const [posts, setPosts] = React.useState({samplePost: {
-  //   videoURI: String,
-  // }});
-  //Import the data
-  //setPosts({samplePost: {videoURI: "http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4",}}
-  // )
+
 
   const [toRender, setToRender] = useState({data:[]});
+  const [isLoading, setisLoading] = useState(false);
 
   // const DATA = [
   //     {
@@ -40,25 +36,7 @@ export default function HomeScreen({ navigation }) {
   //     },
   //   ];
 
-  //  Method 2
-  //const load = async () => {
-  //   try {
-  //     let uri = await AsyncStorage.getItem('loza');
-
-  //     if (uri !== null){
-  //       setData(prevState => ({
-  //         DATA: [...prevState.DATA, {id: "loza", title: 'loza', videoURI: uri}]
-  //       }))
-  //     }
-  //   } catch(e){
-  //     console.log(e)
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   load();
-  // }, []);
-
+ 
   //Method 1
 
     const loadData =  async () => {
@@ -77,13 +55,13 @@ export default function HomeScreen({ navigation }) {
       //   "videoURI": String,
       // }
 
-      const posts = async() => {
-        try {
-         return await AsyncStorage.getItem(post);
+      // const posts = async() => {
+      //   try {
+      //    return await AsyncStorage.getItem(post);
           
           
-        } catch{}
-      }
+      //   } catch{}
+      // }
 
         
 
@@ -98,27 +76,28 @@ export default function HomeScreen({ navigation }) {
         } catch{}
 
         if (uri != null){
-            setToRender({
-              data: [...toRender.data.videoURI, ...posts.uri],
-            })
-            // tempObj = {
-            // 'id': post,
-            // "videoURI": uri,
-          // }
+            // setToRender({
+            //   data: [...toRender.data.videoURI, ...posts.uri],
+            // })
+            tempObj = {
+            'id': post,
+            "videoURI": uri,
+          }
+          toRender.push(tempObj)
         }
 
         
         // tempObj["id"] = post;
         // tempObj["videoURI"] = uri;
-        // toRender.push(tempObj)
-        
+        // toRender.push(tempObj) 
         
       }
-      //console.log('PUSH=>', tempObj)
-      
+
+      setisLoading(true);
     }
 
-    // loadData();
+    
+    loadData();
     
   
   
