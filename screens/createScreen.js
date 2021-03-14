@@ -154,7 +154,7 @@ export default function CreateScreen({ navigation }) {
       <TouchableOpacity activeOpacity={0.5} onPress={goHomeScreen}>
           <Image
           source={require('../assets/Create.png')}
-          style={{alignSelf: 'flex-end', padding: 8}}
+          style={{alignSelf: 'center', marginTop: 26,}}
           />
       </TouchableOpacity>
       </View>

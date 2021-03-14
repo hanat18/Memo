@@ -8,6 +8,7 @@ import CreateScreen from '../screens/createScreen';
 import AlbumScreen from '../screens/albumScreen';
 import RemindersScreen from '../screens/remindersScreen';
 import ProfileScreen from '../screens/profileScreen';
+import createReminderScreen from '../screens/createReminderScreen'
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 
 
@@ -82,7 +83,6 @@ function AlbumStackScreen() {
     >
 
       <AlbumStack.Screen name="Albums" component={AlbumScreen} />
-      {/* <AlbumStack.Screen name="Albums" component={CreateScreen} /> */}
     </AlbumStack.Navigator>
   );
 }
@@ -106,7 +106,31 @@ function RemindersStackScreen() {
     
     >
     <RemindersStack.Screen name="Reminders" component={RemindersScreen} />
+    <RemindersStack.Screen name="CreateReminder" component={createReminderScreen} />
     </RemindersStack.Navigator>
+  );
+}
+
+const CreateReminderStack = createStackNavigator();
+    function CreateReminderStackScreen() {
+    return (
+        <CreateReminderStack.Navigator
+        screenOptions = {{
+        headerTitle: "memo",
+        headerTintColor: "#3AA1F6",
+        headerStyle: {
+            backgroundColor: '#E8E8E8',
+            height: 100,
+        },
+        headerTitleStyle: {
+            fontSize: 40,
+            fontWeight: "300",
+        }
+        }}
+    
+    >
+      <CreateReminderStack.Screen name="CreateReminder" component={createReminderScreen} />
+    </CreateReminderStack.Navigator>
   );
 }
 
@@ -152,7 +176,7 @@ export default function MyTabs() {
               iconName = focused ? 'notifications-outline' : 'notifications-outline';
             } else if (route.name === "Profile") {
               iconName = focused ? 'person-circle-outline' : 'person-circle-outline';
-            } 
+            }
 
             return <Ionicons name={iconName} size={route.name === "Create" ? 50 : 30} color={color} />
           }
