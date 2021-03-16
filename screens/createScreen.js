@@ -48,6 +48,7 @@ export default function CreateScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [currTrigger, setCurrTrigger] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState();
+  const [objectType, setObjectType] = useState();
   
   useEffect(() => {
     (async () => {
@@ -68,7 +69,8 @@ export default function CreateScreen({ navigation }) {
       quality: 1,
     });
 
-    //console.log(result);
+    // console.log("TYPE", result);
+    setObjectType(result.type);
 
     if (!result.cancelled) {
       setImage(result.uri);
@@ -78,15 +80,13 @@ export default function CreateScreen({ navigation }) {
   const goHomeScreen =  async () => {
 
     try {
-      await AsyncStorage.setItem('videoURI', image);
+        await AsyncStorage.setItem(image, JSON.stringify([image, objectType]));
+
+      
+      navigation.navigate('HomeTab');
     } catch {}
 
-    try {
-      var uri = await AsyncStorage.getItem('loza');
-
-    } catch{}
-
-    navigation.navigate('HomeTab');
+    
   }
 
   return (
@@ -99,7 +99,7 @@ export default function CreateScreen({ navigation }) {
           <Image 
           source={require('../assets/image.png')}
           style={{alignSelf: 'center'}}
-          //onPress={pickImage}
+          onPress={pickImage}
           />
       </TouchableOpacity>
       </View>
@@ -155,6 +155,7 @@ export default function CreateScreen({ navigation }) {
           <Image
           source={require('../assets/Create.png')}
           style={{alignSelf: 'center', marginTop: 26,}}
+          onPress={goHomeScreen}
           />
       </TouchableOpacity>
       </View>

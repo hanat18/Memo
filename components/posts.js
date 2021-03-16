@@ -10,22 +10,30 @@ const Post = (props) => {
     const [status, setStatus] = React.useState({});
     const [isPlaying, setIsPlaying] = useState(false);
 
+    // console.log("POST N: ", props);
+    // console.log("hi")
   
     return (
         <View style={styles.container}>
+
         <TouchableWithoutFeedback style={{justifyContent: 'center'}} onPress={() => {status.isPlaying && video != null ? video.current.pauseAsync() : video.current.playAsync()}} >
-              <Video 
+              {props.children.format === "video" ? <Video 
                   ref={video}
                   style={styles.video}
                   shouldPlay='true'
-                  source={{
-                  uri: props.uri,
-                  }}
+                  source={{uri: props.children.videoURI}}
                   isLooping
                   onError={(e) => console.log(e)}
                   onPlaybackStatusUpdate={status => setStatus(() => status)}
                   resizeMode={'cover'}
               />
+              : <Image
+                    style={styles.video}
+                    source={{uri: props.children.videoURI}}
+                    //onError={(e) => console.log(e)}
+              />
+                  }
+
               
 
           </TouchableWithoutFeedback>
@@ -37,6 +45,14 @@ const Post = (props) => {
               style={{alignSelf: 'center'}}
               />
           </TouchableOpacity>
+          </View>
+                
+          
+        </View>
+  );
+};
+
+
           {/* <View style = {{paddingTop: 12}}>
             <Image
                 //onPress={() => {setIsPlaying(!isPlaying)}}
@@ -46,13 +62,6 @@ const Post = (props) => {
                 />
           </View> */}
           
-          </View>
-
-          
-        </View>
-  );
-};
-
 const styles = StyleSheet.create({
     container: {
       width: '100%',
