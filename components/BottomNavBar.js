@@ -10,6 +10,8 @@ import createAlbumScreen from '../screens/createAlbumScreen'
 import RemindersScreen from '../screens/remindersScreen';
 import ProfileScreen from '../screens/profileScreen';
 import createReminderScreen from '../screens/createReminderScreen'
+import finalizeAlbumScreen from '../screens/finalizeAlbumScreen'
+import viewAlbumScreen from '../screens/viewAlbumScreen'
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
 
 
@@ -23,6 +25,7 @@ function HomeStackScreen() {
     screenOptions = {{
       headerTitle: "memo",
       headerTintColor: "#3AA1F6",
+      headerBackTitleVisible: false,
       headerStyle: {
         backgroundColor: '#E8E8E8',
         height: 100,
@@ -47,6 +50,7 @@ function CreateStackScreen() {
     screenOptions = {{
       headerTitle: "memo",
       headerTintColor: "#3AA1F6",
+      headerBackTitleVisible: false,
       headerStyle: {
         backgroundColor: '#E8E8E8',
         height: 100,
@@ -70,6 +74,7 @@ function AlbumStackScreen() {
     <AlbumStack.Navigator
     screenOptions = {{
       headerTitle: "memo",
+      headerBackTitleVisible: false,
       headerTintColor: "#3AA1F6",
       headerStyle: {
         backgroundColor: '#E8E8E8',
@@ -85,6 +90,8 @@ function AlbumStackScreen() {
 
       <AlbumStack.Screen name="Albums" component={AlbumScreen} />
       <AlbumStack.Screen name="CreateAlbum" component={createAlbumScreen} />
+      <AlbumStack.Screen name="FinalizeAlbum" component={finalizeAlbumScreen} />
+      <AlbumStack.Screen name="ViewAlbum" component={viewAlbumScreen} />
     </AlbumStack.Navigator>
   );
 }
@@ -96,6 +103,7 @@ function RemindersStackScreen() {
     screenOptions = {{
       headerTitle: "memo",
       headerTintColor: "#3AA1F6",
+      headerBackTitleVisible: false,
       headerStyle: {
         backgroundColor: '#E8E8E8',
         height: 100,
@@ -120,6 +128,7 @@ function ProfileStackScreen() {
     screenOptions = {{
       headerTitle: "memo",
       headerTintColor: "#3AA1F6",
+      headerBackTitleVisible: false,
       headerStyle: {
         backgroundColor: '#E8E8E8',
         height: 100,

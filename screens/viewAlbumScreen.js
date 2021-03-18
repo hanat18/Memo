@@ -8,7 +8,7 @@ import { Video, AVPlaybackStatus } from 'expo-av';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
-export default function createAlbumScreen({navigation}) {
+export default function viewAlbumScreen({route, navigation}) {
   const video = React.useRef(null);
   const [dataSource, setDataSource] = useState([]);
   const [finishLoading, setfinishLoading] = useState(false);
@@ -17,6 +17,7 @@ export default function createAlbumScreen({navigation}) {
   const [pressedTracker, setPressedTracker] = useState({});
   let notPressed;
   const [op, setOp] = useState(0);
+  const { albumName } = route.params;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -27,34 +28,44 @@ export default function createAlbumScreen({navigation}) {
         var finalArray = [];
         var postObj = {};
 
-
         
   
         try {
           keys = await AsyncStorage.getAllKeys()
+          //console.log("keys", keys)
         } catch{}
           
         //Loops through all keys and retrieves the attaches URIs
         
         for (var i = 0; i < keys.length; i++) {
           let post = keys[i];
+          //console.log("post", post)
           
           try {
             result = await AsyncStorage.getItem(post);
             var content = JSON.parse(result);
-    
   
             if (result != null && post != "albums") {
-              tempObj = {
-                'id': post,
-                "videoURI": content[0],
-                "format": content[1],
-                "triggerWarning": content[2],
-              }
-              //Dynamically creates a "toRender" object and stores it in state
-              postObj[tempObj.id] = false;
               
-              finalArray.push(tempObj);
+
+              console.log("Array Album", content[3]);
+
+              if (content[3].includes(albumName)) {
+                console.log("Activated");
+                tempObj = {
+                  'id': post,
+                  "videoURI": content[0],
+                  "format": content[1],
+                  "triggerWarning": content[2],
+                  "albumMemo": content[3]
+                }       
+                
+                finalArray.push(tempObj);
+              }
+              // //Dynamically creates a "toRender" object and stores it in state
+              // postObj[tempObj.id] = true;
+              
+              // finalArray.push(tempObj);
               }
             
           } catch(e){
@@ -62,10 +73,8 @@ export default function createAlbumScreen({navigation}) {
           }
         }
   
-        setPressedTracker(postObj);
-        notPressed = postObj;
-        setToRender(finalArray);
         setfinishLoading(true);
+        setToRender(finalArray);
       }
   
       loadData();
@@ -76,7 +85,7 @@ export default function createAlbumScreen({navigation}) {
     const onPressHandler = (item) => {
         if (op == 0){
             setOp(0.5);
-        }else {
+        }else{
             setOp(0);
         }
     
@@ -86,13 +95,13 @@ export default function createAlbumScreen({navigation}) {
         setPressedTracker(tempObj);
         console.log("Second change", pressedTracker[item.id]);
 
-
     } 
     
 
   return (
     <SafeAreaView style={styles.container}>
-    <Text style={styles.title}> Tap to Select Memos </Text>
+    <ScrollView>
+    <Text style={styles.title}> {albumName} </Text>
     <FlatList
       data={toRender}
       renderItem={({item}) => (
@@ -104,26 +113,30 @@ export default function createAlbumScreen({navigation}) {
             maxWidth: (Dimensions.get('window').width)/2,
             alignItems: 'center',
             
-          }}> 
-            <TouchableOpacity onPress={() => onPressHandler(item)} underlayColor={'gray'} >
-
-            {item.format === "video" ? <Video 
-                  ref={video}
-                  style={styles.video}
-                  source={{
-                  uri: item.videoURI,
-                  }}
-                  resizeMode="cover"
-              />
-              : <Image
-                    style={styles.video}
-                    source={{uri: item.videoURI}}
-                    //onError={(e) => console.log(e)}
-                    
-              />
-                  }
-            </TouchableOpacity>    
-        
+          }}>     
+        {pressedTracker[item.id] === true ? <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: 0.5}}>
+            <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                uri: item.videoURI,
+                }}
+                resizeMode="cover"
+                
+            />
+            </TouchableOpacity>
+            :
+            <TouchableOpacity onPress={() => onPressHandler(item)}>
+            <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                uri: item.videoURI,
+                }}
+                resizeMode="cover"
+                
+            />
+            </TouchableOpacity>}
 
 
         </View>
@@ -134,6 +147,7 @@ export default function createAlbumScreen({navigation}) {
     />
 
 
+    </ScrollView>
     <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
           <Image 
           source={require('../assets/createAlbumBtn.png')}
