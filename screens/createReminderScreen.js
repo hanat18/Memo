@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Button, Dimensions, SafeAreaView, Switch, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, Dimensions, SafeAreaView, Switch, TouchableOpacity, Image, Alert } from 'react-native';
 import {useState, useEffect} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
@@ -78,6 +78,7 @@ export default function createReminderScreen({navigation}){
     const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const [pickedTime, setPickedTime] = useState("00:00");
     const [pickedDate, setPickedDate] = useState("MM/DD/YYYY");
+    const [title, setTitle] = useState();
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -101,11 +102,27 @@ export default function createReminderScreen({navigation}){
         hideTimePicker();
     }, [pickedTime]);
 
+    const created =  async () => {
+        let passing;
+        try {
+            
+          passing = await AsyncStorage.setItem(title, JSON.stringify([pickedTime, pickedDate]));
+        } catch {}
+            console.log("*********TITLE", title);
+            Alert.alert("Success! \n You have successfully created a new reminder.");
+            navigation.navigate("Reminders", {
+                title: title,
+                pickedTime: pickedTime,
+                pickedDate: pickedDate,
+            });
+        
+      }
+
 
     return(
         <SafeAreaView>
             <Text style={styles.title}> Create A Reminder</Text>
-            <TextInput style={styles.textEntry} placeholder="remind me to..."></TextInput>
+            <TextInput style={styles.textEntry} placeholder="remind me to..." onChangeText={(reminder) => {setTitle(reminder);}}></TextInput>
             <View>
                 <Text style={styles.subtitle}> Pick a day</Text>
                 <TouchableOpacity
@@ -143,7 +160,7 @@ export default function createReminderScreen({navigation}){
             
             
             <View>
-                <TouchableOpacity activeOpacity={0.5} onPress={() => {navigation.navigate("Reminders");}}>
+                <TouchableOpacity activeOpacity={0.5} onPress={created}>
                     <Image
                     source={require('../assets/Create.png')}
                     style={{alignSelf: 'center', marginTop: 26,}}

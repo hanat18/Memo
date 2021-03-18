@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import HomeScreen from '../screens/homeScreen';
 import CreateScreen from '../screens/createScreen';
 import AlbumScreen from '../screens/albumScreen';
+import createAlbumScreen from '../screens/createAlbumScreen'
 import RemindersScreen from '../screens/remindersScreen';
 import ProfileScreen from '../screens/profileScreen';
 import createReminderScreen from '../screens/createReminderScreen'
@@ -83,6 +84,7 @@ function AlbumStackScreen() {
     >
 
       <AlbumStack.Screen name="Albums" component={AlbumScreen} />
+      <AlbumStack.Screen name="CreateAlbum" component={createAlbumScreen} />
     </AlbumStack.Navigator>
   );
 }
@@ -105,32 +107,9 @@ function RemindersStackScreen() {
     }}
     
     >
-    <RemindersStack.Screen name="Reminders" component={RemindersScreen} />
+    <RemindersStack.Screen name="Reminders" component={RemindersScreen} optional={{item: 89, info: 'idk'}} />
     <RemindersStack.Screen name="CreateReminder" component={createReminderScreen} />
     </RemindersStack.Navigator>
-  );
-}
-
-const CreateReminderStack = createStackNavigator();
-    function CreateReminderStackScreen() {
-    return (
-        <CreateReminderStack.Navigator
-        screenOptions = {{
-        headerTitle: "memo",
-        headerTintColor: "#3AA1F6",
-        headerStyle: {
-            backgroundColor: '#E8E8E8',
-            height: 100,
-        },
-        headerTitleStyle: {
-            fontSize: 40,
-            fontWeight: "300",
-        }
-        }}
-    
-    >
-      <CreateReminderStack.Screen name="CreateReminder" component={createReminderScreen} />
-    </CreateReminderStack.Navigator>
   );
 }
 

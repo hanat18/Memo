@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image, Platform, Text, View, Button, SafeAreaView, Flexbox, ScrollView} from 'react-native';
+import { StyleSheet, Image, Platform, Text, View, Button, SafeAreaView, Flexbox, ScrollView, Modal, Alert} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -78,15 +78,13 @@ export default function CreateScreen({ navigation }) {
   };
 
   const goHomeScreen =  async () => {
-
+    
     try {
-        await AsyncStorage.setItem(image, JSON.stringify([image, objectType]));
-
-      
+      await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger]));
+      Alert.alert("Success! \n You have successfully uploaded your Memo.");
       navigation.navigate('HomeTab');
     } catch {}
 
-    
   }
 
   return (

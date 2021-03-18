@@ -5,113 +5,147 @@ import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import EventCalendar from 'react-native-events-calendar'
 import {createReminderScreen} from './createReminderScreen'
 import { createStackNavigator, HeaderBackButton } from '@react-navigation/stack';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, withNavigationFocus } from '@react-navigation/native';
+import { add } from 'react-native-reanimated';
 
 let { width } = Dimensions.get('window');
 
 export default class RemindersScreen extends React.Component {
-
   onSharePress = (shareOptions) => {
     Share.share(shareOptions);  
  }
 
   constructor(props) {
     super(props);
+    console.log("PROPS IN REMINDER", props);
     this.state = {
       events: [
         {
-          start: '2017-09-06 22:30:00',
-          end: '2017-09-06 23:30:00',
+          start: '2021-03-17 22:30:00',
+          end: '2021-03-17 23:30:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
           color: 'green',
         },
         {
-          start: '2017-09-07 00:30:00',
-          end: '2017-09-07 01:30:00',
+          start: '2021-03-17 00:30:00',
+          end: '2021-03-17 01:30:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-07 01:30:00',
-          end: '2017-09-07 02:20:00',
+          start: '2021-03-17 01:30:00',
+          end: '2021-03-17 02:20:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-07 04:10:00',
-          end: '2017-09-07 04:40:00',
+          start: '2021-03-17 04:10:00',
+          end: '2021-03-17 04:40:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-07 01:05:00',
-          end: '2017-09-07 01:45:00',
+          start: '2021-03-17 01:05:00',
+          end: '2021-03-17 01:45:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-07 14:30:00',
-          end: '2017-09-07 16:30:00',
+          start: '2021-03-17 14:30:00',
+          end: '2021-03-17 16:30:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-08 01:20:00',
-          end: '2017-09-08 02:20:00',
+          start: '2021-03-18 01:20:00',
+          end: '2021-03-18 02:20:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-08 04:10:00',
-          end: '2017-09-08 04:40:00',
+          start: '2021-03-18 04:10:00',
+          end: '2021-03-18 04:40:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-08 00:45:00',
-          end: '2017-09-08 01:45:00',
+          start: '2021-03-18 00:45:00',
+          end: '2021-03-18 01:45:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-08 11:30:00',
-          end: '2017-09-08 12:30:00',
+          start: '2021-03-18 11:30:00',
+          end: '2021-03-18 12:30:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-09 01:30:00',
-          end: '2017-09-09 02:00:00',
+          start: '2021-03-19 01:30:00',
+          end: '2021-03-19 02:00:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-09 03:10:00',
-          end: '2017-09-09 03:40:00',
+          start: '2021-03-19 03:10:00',
+          end: '2021-03-19 03:40:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-09 00:10:00',
-          end: '2017-09-09 01:45:00',
+          start: '2021-03-19 00:10:00',
+          end: '2021-03-19 01:45:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
         {
-          start: '2017-09-10 12:10:00',
-          end: '2017-09-10 13:45:00',
+          start: '2021-03-20 12:10:00',
+          end: '2021-03-20 13:45:00',
           title: 'Dr. Mariana Joseph',
           summary: '3412 Piedmont Rd NE, GA 3032',
         },
       ],
     };
+
+    console.log("PROPSPROPS", props.route.params)
+
+    if (props.route.params != null) {
+      var newEvent = {
+        start: props.route.params.pickedDate,
+        end: '',
+        title: props.route.params.title ,
+        summary: "",
+  
+      }
+      
+      const addItem = (item) => {
+        console.log("Adding new event to list");
+        this.state = {
+          events: [
+            ...this.state.events,
+            item 
+          ]
+        }
+      }
+
+      addItem(newEvent);
+      console.log("Added", newEvent);
+
+    }
+
+  }
+
+  componentDidMount() {
+    const { navigation } = this.props;
+    this.focusListener = navigation.addListener("didFocus", () => {
+      console.log("I am focused - Reminders")
+    });
   }
 
   _eventTapped(event) {
     alert(JSON.stringify(event));
   }
-
 
   render() {
     const { navigation } = this.props;
@@ -121,7 +155,7 @@ export default class RemindersScreen extends React.Component {
           eventTapped={this._eventTapped.bind(this)}
           events={this.state.events}
           width={width}
-          initDate={'2020-03-19'}
+          initDate={'2021-03-19'}
           scrollToFirst
           upperCaseHeader
           uppercase
@@ -137,10 +171,3 @@ export default class RemindersScreen extends React.Component {
     );
   }
 }
-
-
-// export default function remindersScreen(props) {
-//   const navigation = useNavigation();
-
-//   return <remindersScreenClass {...props} navigation={navigation} />;
-// }

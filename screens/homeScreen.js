@@ -1,7 +1,6 @@
-
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View, Button, ImageComponent, IconButton, FlatList, Dimensions, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, Button, ImageComponent, IconButton, FlatList, Dimensions, Modal, TouchableOpacity, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import AlbumScreen from '../screens/albumScreen';
@@ -15,21 +14,16 @@ import { useState } from 'react/cjs/react.development';
 export default function HomeScreen({ navigation }) {
   const [finishLoading, setfinishLoading] = useState(false);
   const [toRender, setToRender] = useState([]);
-
-  // const unsubscribe = navigation.addListener('focus', () => {
-  //   setNewPostCreated(true);
-  //   console.log("NEW");
-  //   console.log("RETURNING FROM CREATE: ", newURI);
-  // });
+  let triggerWarning = 0;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       console.log("I am focused")
       const loadData =  async () => {
         var keys; 
-        var uri;
         var tempObj = {};
         var finalArray = [];
+        
   
         try {
           keys = await AsyncStorage.getAllKeys()
@@ -46,7 +40,11 @@ export default function HomeScreen({ navigation }) {
             result = await AsyncStorage.getItem(post);
             var content = JSON.parse(result);
 
-            console.log(content)
+            // console.log("fetching trigger warning....", content[2])
+            // triggerWarning = content[2];
+            // if (triggerWarning != 0){
+            //   setModalVisible(true);
+            // }
     
   
             if (result != null) {
@@ -54,6 +52,7 @@ export default function HomeScreen({ navigation }) {
                 'id': post,
                 "videoURI": content[0],
                 "format": content[1],
+                "triggerWarning": content[2],
               }
               //Dynamically creates a "toRender" object and stores it in state
               finalArray.push(tempObj)
@@ -67,7 +66,7 @@ export default function HomeScreen({ navigation }) {
         }
   
         setToRender(finalArray);
-        console.log("finalArray", finalArray);
+        // console.log("finalArray", finalArray);
         setfinishLoading(true);
       }
   
@@ -132,13 +131,46 @@ export default function HomeScreen({ navigation }) {
 
   );
 
+  // const showTrigger = (level) => {
+  //   // console.log("****** IN showTrigger()", level);
+  //   <Modal
+  //       animationType="slide"
+  //       // transparent={true}
+  //       visible={modalVisible}
+  //       onRequestClose={() => {
+  //         Alert.alert("Modal has been closed.");
+  //         setModalVisible(!modalVisible);
+  //       }}
+  //     >
+  //       <View style={styles.centeredView}>
+  //         <View style={styles.modalView}>
+  //           <Text style={styles.modalTextTitle}>Trigger Warning!</Text>
+  //           <Text style={styles.modalSubText}>This Memo has been assigned a trigger warning of level {level}. Would you like to view the Memo?</Text>
+  //           <View style={styles.rowPopup}> 
+  //           <TouchableOpacity
+  //             style={[styles.button, styles.buttonGreyClose]}
+  //             onPress={() => setModalVisible(!modalVisible)}
+  //           >
+  //             <Text style={styles.textStyle}>Cancel</Text>
+  //           </TouchableOpacity>
+  //           <TouchableOpacity
+  //             style={[styles.button, styles.buttonClose]}
+  //             onPress={() => setModalVisible(!modalVisible)}
+  //           >
+  //             <Text style={styles.textStyle} onPress={renderPost()}>View Memo</Text>
+              
+  //           </TouchableOpacity>
+  //           </View>
 
-  const renderItem = ({ item }) => (
-    <Item title={item} />
-  );
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
+  //         </View>
+  //       </View>
+  //     </Modal>
+  //     renderPost();
+  // }
+
+  const renderPost = () => {
+    // console.log("++++++++ IN renderpost()", triggerWarning);
+    return <FlatList
         data={toRender}
         renderItem={renderItem}
         keyExtractor={item => item.id}
@@ -147,6 +179,16 @@ export default function HomeScreen({ navigation }) {
         snapToAlignment={'start'}
         decelerationRate={'fast'}
       />
+  }
+
+
+  const renderItem = ({ item }) => (
+    <Item title={item} />
+  );
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* {triggerWarning != 0 ? showTrigger(triggerWarning) : renderPost()} */}
+      {renderPost()}
     </SafeAreaView>
   );
 }
