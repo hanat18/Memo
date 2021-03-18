@@ -8,7 +8,7 @@ import { Video, AVPlaybackStatus } from 'expo-av';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
-export default function createAlbumScreen({navigation}) {
+export default function viewAlbumScreen({navigation}) {
   const video = React.useRef(null);
   const [dataSource, setDataSource] = useState([]);
   const [finishLoading, setfinishLoading] = useState(false);

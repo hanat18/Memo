@@ -34,18 +34,76 @@ const styles = StyleSheet.create({
 
 export default function AlbumScreen({ navigation }) {
   const [dataSource, setDataSource] = useState([]);
-  
+  const [finishLoading, setfinishLoading] = useState(false);
 
   useEffect(() => {
-    let items = Array.apply(null, Array(3)).map((v, i) => {
-      return {
-        id: i,
-        src: 'http://placehold.it/200x200?text=' + (i + 1),
-        title: "Album #" + (i + 1),
-      };
+    const unsubscribe = navigation.addListener('focus', () => {
+      //console.log("I am focused");
+      const loadData =  async () => {
+        var keys; 
+        var tempObj = {};
+        var albumArray;
+
+
+        //console.log("123");
+        
+  
+        try {
+          var result = await AsyncStorage.getItem("albums");
+          albumArray = JSON.parse(result);
+          console.log("The Albums in this page",albumArray);
+        } catch{}
+
+        let items = Array.apply(null, Array(albumArray.length)).map((v, i) => {
+          return {
+            title: albumArray[i][0],
+          };
+        });
+        setDataSource(items);
+  
+        //console.log("Album Array", albumArray);
+          
+      }
+
+      loadData();
+
+
     });
-    setDataSource(items);
-  }, []);
+    return unsubscribe;
+  }, [navigation]);
+  
+
+
+  // useEffect(() => {
+  //   let items = Array.apply(null, Array(3)).map((v, i) => {
+  //     return {
+  //       title: "Album #" + (i + 1),
+  //     };
+  //   });
+  //   setDataSource(items);
+  // }, []);
+
+  // dataSource Array [
+  //   Object {
+  //     "id": 0,
+  //     "src": "http://placehold.it/200x200?text=1",
+  //     "title": "Album #1",
+  //   },
+  //   Object {
+  //     "id": 1,
+  //     "src": "http://placehold.it/200x200?text=2",
+  //     "title": "Album #2",
+  //   },
+  //   Object {
+  //     "id": 2,
+  //     "src": "http://placehold.it/200x200?text=3",
+  //     "title": "Album #3",
+  //   },
+  // ]
+
+
+
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -62,11 +120,16 @@ export default function AlbumScreen({ navigation }) {
               maxWidth: (Dimensions.get('window').width)/2,
               alignItems: 'center',
             }}>
+
+          <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('ViewAlbum')}>
             
             <Image
               style={styles.imageThumbnail}
               source={require('../assets/album.png')}
             />
+          </TouchableOpacity>
+
+
             <Text style={styles.subtitle}> {item.title}</Text>
           </View>
         )}

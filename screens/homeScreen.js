@@ -28,6 +28,14 @@ export default function HomeScreen({ navigation }) {
         try {
           keys = await AsyncStorage.getAllKeys()
           //console.log("keys", keys)
+
+          try {
+            var fad = await AsyncStorage.getItem("albums");
+            console.log("All the way out here", fad);
+
+          } catch {
+
+          }
         } catch{}
           
         //Loops through all keys and retrieves the attaches URIs
@@ -47,7 +55,7 @@ export default function HomeScreen({ navigation }) {
             // }
     
   
-            if (result != null) {
+            if (result != null && post != "albums") {
               tempObj = {
                 'id': post,
                 "videoURI": content[0],
