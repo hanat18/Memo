@@ -8,7 +8,7 @@ import { Video, AVPlaybackStatus } from 'expo-av';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
-export default function viewAlbumScreen({navigation}) {
+export default function viewAlbumScreen({route, navigation}) {
   const video = React.useRef(null);
   const [dataSource, setDataSource] = useState([]);
   const [finishLoading, setfinishLoading] = useState(false);
@@ -17,6 +17,7 @@ export default function viewAlbumScreen({navigation}) {
   const [pressedTracker, setPressedTracker] = useState({});
   let notPressed;
   const [op, setOp] = useState(0);
+  const { albumName } = route.params;
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -26,7 +27,6 @@ export default function viewAlbumScreen({navigation}) {
         var tempObj = {};
         var finalArray = [];
         var postObj = {};
-
 
         
   
@@ -44,25 +44,28 @@ export default function viewAlbumScreen({navigation}) {
           try {
             result = await AsyncStorage.getItem(post);
             var content = JSON.parse(result);
-
-            // console.log("fetching trigger warning....", content[2])
-            // triggerWarning = content[2];
-            // if (triggerWarning != 0){
-            //   setModalVisible(true);
-            // }
-    
   
             if (result != null && post != "albums") {
-              tempObj = {
-                'id': post,
-                "videoURI": content[0],
-                "format": content[1],
-                "triggerWarning": content[2],
-              }
-              //Dynamically creates a "toRender" object and stores it in state
-              postObj[tempObj.id] = true;
               
-              finalArray.push(tempObj);
+
+              console.log("Array Album", content[3]);
+
+              if (content[3].includes(albumName)) {
+                console.log("Activated");
+                tempObj = {
+                  'id': post,
+                  "videoURI": content[0],
+                  "format": content[1],
+                  "triggerWarning": content[2],
+                  "albumMemo": content[3]
+                }       
+                
+                finalArray.push(tempObj);
+              }
+              // //Dynamically creates a "toRender" object and stores it in state
+              // postObj[tempObj.id] = true;
+              
+              // finalArray.push(tempObj);
               }
             
           } catch(e){
@@ -70,12 +73,8 @@ export default function viewAlbumScreen({navigation}) {
           }
         }
   
-        setPressedTracker(postObj);
-        notPressed = postObj;
-        setToRender(finalArray);
-        //console.log("Create Album Data", finalArray);
-        //console.log("Not pressed: ", notPressed);
         setfinishLoading(true);
+        setToRender(finalArray);
       }
   
       loadData();
@@ -102,7 +101,7 @@ export default function viewAlbumScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
     <ScrollView>
-    <Text style={styles.title}> Tap to Select Memos </Text>
+    <Text style={styles.title}> {albumName} </Text>
     <FlatList
       data={toRender}
       renderItem={({item}) => (

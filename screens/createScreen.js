@@ -49,6 +49,41 @@ export default function CreateScreen({ navigation }) {
   const [currTrigger, setCurrTrigger] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState();
   const [objectType, setObjectType] = useState();
+  const [albums, setAlbums] = useState();
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('focus', () => {
+  //     //console.log("I am focused");
+  //     const loadData =  async () => {
+  //       var keys; 
+  //       var tempObj = {};
+  //       var albumArray = [];
+  //       try {
+  //         var result = await AsyncStorage.getItem("albums");
+  //         albumArray = JSON.parse(result);
+  //         console.log("The Albums in this page", albumArray);
+  //       } catch{}
+
+
+
+  //       if (albumArray.length != 0) {
+  //         for (var i = 0; i < albumArray.length; i++ ) {
+  //           albumArray.push(albumArray[i][0]);
+  //         }
+
+  //         setAlbums(items);
+  //         console.log("I'm getting the albums", items);
+          
+  //       }
+          
+  //     }
+
+  //     loadData();
+
+
+  //   });
+  //   return unsubscribe;
+  // }, [navigation]);
   
   useEffect(() => {
     (async () => {
@@ -104,7 +139,7 @@ export default function CreateScreen({ navigation }) {
 
       <View>
         <Text style={styles.subtitle}> Add a voice narration to the memo</Text>
-        <TouchableOpacity activeOpacity={0.5}>
+        <TouchableOpacity activeOpacity={0.5} onPress={() => Alert.alert("Voice narration doesn't work yet :( - We'll use a sample story instead")}>
           <Image
           source={require('../assets/narrationImage.png')}
           style={{alignSelf: 'center', paddingBottom: 8}}

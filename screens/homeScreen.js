@@ -18,7 +18,7 @@ export default function HomeScreen({ navigation }) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log("I am focused")
+      //console.log("I am focused")
       const loadData =  async () => {
         var keys; 
         var tempObj = {};
@@ -31,7 +31,7 @@ export default function HomeScreen({ navigation }) {
 
           try {
             var fad = await AsyncStorage.getItem("albums");
-            console.log("All the way out here", fad);
+            //console.log("All the way out here", fad);
 
           } catch {
 

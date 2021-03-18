@@ -32,24 +32,16 @@ export default function createAlbumScreen({navigation}) {
   
         try {
           keys = await AsyncStorage.getAllKeys()
-          //console.log("keys", keys)
         } catch{}
           
         //Loops through all keys and retrieves the attaches URIs
         
         for (var i = 0; i < keys.length; i++) {
           let post = keys[i];
-          //console.log("post", post)
           
           try {
             result = await AsyncStorage.getItem(post);
             var content = JSON.parse(result);
-
-            // console.log("fetching trigger warning....", content[2])
-            // triggerWarning = content[2];
-            // if (triggerWarning != 0){
-            //   setModalVisible(true);
-            // }
     
   
             if (result != null && post != "albums") {
@@ -60,7 +52,7 @@ export default function createAlbumScreen({navigation}) {
                 "triggerWarning": content[2],
               }
               //Dynamically creates a "toRender" object and stores it in state
-              postObj[tempObj.id] = true;
+              postObj[tempObj.id] = false;
               
               finalArray.push(tempObj);
               }
@@ -73,8 +65,6 @@ export default function createAlbumScreen({navigation}) {
         setPressedTracker(postObj);
         notPressed = postObj;
         setToRender(finalArray);
-        //console.log("Create Album Data", finalArray);
-        //console.log("Not pressed: ", notPressed);
         setfinishLoading(true);
       }
   
@@ -86,7 +76,7 @@ export default function createAlbumScreen({navigation}) {
     const onPressHandler = (item) => {
         if (op == 0){
             setOp(0.5);
-        }else{
+        }else {
             setOp(0);
         }
     
@@ -96,12 +86,12 @@ export default function createAlbumScreen({navigation}) {
         setPressedTracker(tempObj);
         console.log("Second change", pressedTracker[item.id]);
 
+
     } 
     
 
   return (
     <SafeAreaView style={styles.container}>
-    <ScrollView>
     <Text style={styles.title}> Tap to Select Memos </Text>
     <FlatList
       data={toRender}
@@ -114,30 +104,26 @@ export default function createAlbumScreen({navigation}) {
             maxWidth: (Dimensions.get('window').width)/2,
             alignItems: 'center',
             
-          }}>     
-        {pressedTracker[item.id] === true ? <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: 0.5}}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={{
-                uri: item.videoURI,
-                }}
-                resizeMode="cover"
-                
-            />
-            </TouchableOpacity>
-            :
-            <TouchableOpacity onPress={() => onPressHandler(item)}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={{
-                uri: item.videoURI,
-                }}
-                resizeMode="cover"
-                
-            />
-            </TouchableOpacity>}
+          }}> 
+            <TouchableOpacity onPress={() => onPressHandler(item)} underlayColor={'gray'} >
+
+            {item.format === "video" ? <Video 
+                  ref={video}
+                  style={styles.video}
+                  source={{
+                  uri: item.videoURI,
+                  }}
+                  resizeMode="cover"
+              />
+              : <Image
+                    style={styles.video}
+                    source={{uri: item.videoURI}}
+                    //onError={(e) => console.log(e)}
+                    
+              />
+                  }
+            </TouchableOpacity>    
+        
 
 
         </View>
@@ -148,7 +134,6 @@ export default function createAlbumScreen({navigation}) {
     />
 
 
-    </ScrollView>
     <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
           <Image 
           source={require('../assets/createAlbumBtn.png')}

@@ -83,7 +83,6 @@ export default function finalizeAlbumScreen({navigation}){
         const unsubscribe = navigation.addListener('focus', () => {
             const loadData =  async () => {
                 var test = await AsyncStorage.getItem("albums");
-                console.log("Im the man in the end", test);
             }
 
             loadData();
@@ -134,16 +133,16 @@ export default function finalizeAlbumScreen({navigation}){
         //Creating a new album in our album key
         try {
             var result = await AsyncStorage.getItem("albums");
-            console.log("The albums i received", result);
+            //console.log("The albums i received", result);
             var content = JSON.parse(result);
             var currAlbums = content;
             currAlbums.push([title, description]);
-            console.log("Albums im about to push", currAlbums);
+            //console.log("Albums im about to push", currAlbums);
             try {
-                await AsyncStorage.removeItem("albums");
+                var test = await AsyncStorage.removeItem("albums");
 
                 try {
-                    await AsyncStorage.setItem("albums", JSON.stringify(currAlbums));
+                    var test2 = await AsyncStorage.setItem("albums", JSON.stringify(currAlbums));
 
                 } catch {
 
@@ -156,14 +155,12 @@ export default function finalizeAlbumScreen({navigation}){
 
 
 
-
-
-            Alert.alert("Success! \n You have successfully created your album!");
-            navigation.navigate('Albums');
             
         } catch {}
 
         //Going through and updating our posts
+        Alert.alert("Success! \n You have successfully created your album!");
+        navigation.navigate('Albums');
 
       
 

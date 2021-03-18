@@ -42,26 +42,25 @@ export default function AlbumScreen({ navigation }) {
       const loadData =  async () => {
         var keys; 
         var tempObj = {};
-        var albumArray;
-
-
-        //console.log("123");
-        
-  
+        var albumArray = [];
         try {
           var result = await AsyncStorage.getItem("albums");
           albumArray = JSON.parse(result);
-          console.log("The Albums in this page",albumArray);
+          //console.log("The Albums in this page", albumArray);
         } catch{}
 
-        let items = Array.apply(null, Array(albumArray.length)).map((v, i) => {
-          return {
-            title: albumArray[i][0],
-          };
-        });
-        setDataSource(items);
-  
-        //console.log("Album Array", albumArray);
+
+
+        if (albumArray.length != 0) {
+          let items = Array.apply(null, Array(albumArray.length)).map((v, i) => {
+            return {
+              title: albumArray[i][0],
+            };
+          });
+
+          setDataSource(items);
+          
+        }
           
       }
 
@@ -107,7 +106,6 @@ export default function AlbumScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-    <ScrollView>
     <Text style={styles.title}> My Memory Albums</Text>
       <FlatList
         data={dataSource}
@@ -121,7 +119,9 @@ export default function AlbumScreen({ navigation }) {
               alignItems: 'center',
             }}>
 
-          <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('ViewAlbum')}>
+          <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('ViewAlbum',{
+            albumName: item.title,
+          })}>
             
             <Image
               style={styles.imageThumbnail}
@@ -137,7 +137,6 @@ export default function AlbumScreen({ navigation }) {
         numColumns={2}
         keyExtractor={(item, index) => index}
       />
-    </ScrollView>
 
     <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('CreateAlbum')}>
           <Image 
