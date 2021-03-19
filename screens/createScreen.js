@@ -389,7 +389,7 @@ export default function CreateScreen({ navigation }) {
       <TouchableOpacity activeOpacity={0.5} onPress={goHomeScreen}>
           <Image
           source={require('../assets/Create.png')}
-          style={{alignSelf: 'center', marginTop: 26,}}
+          style={{alignSelf: 'center', marginBottom: 20}}
           onPress={goHomeScreen}
           />
       
@@ -403,7 +403,7 @@ export default function CreateScreen({ navigation }) {
       <TouchableOpacity activeOpacity={0.5} onPress={() => {Alert.alert("You must select a photo or video!")}}>
           <Image
           source={require('../assets/createGrey.png')}
-          style={{alignSelf: 'center', marginTop: 26,}}
+          style={{alignSelf: 'center', marginBottom: 20}}
           onPress={goHomeScreen}
           />
       

@@ -199,8 +199,6 @@ export default function viewAlbumScreen({route, navigation}) {
                 }
                 console.log("New", post, updatedAlbumMem);
 
-                
-
                 var newData = [content[0], content[1], content[2], updatedAlbumMem];
                 console.log("Post", post, "to ", newData)
 
@@ -214,12 +212,6 @@ export default function viewAlbumScreen({route, navigation}) {
           //console.log("ERROR: ", e)
         }
       }
-
-
-
-
-
-      
     }
     
 

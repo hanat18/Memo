@@ -247,9 +247,9 @@ export default class RemindersScreen extends React.Component {
       ],
     };
 
-    const setModalVisible = (visible) => {
-      this.setState({ modalVisible: visible });
-    }
+    // const setModalVisible = (visible) => {
+      // this.state({ modalVisible: false });
+    // }
 
     var checkSwitch=(param)=>{
   
@@ -324,6 +324,7 @@ export default class RemindersScreen extends React.Component {
       const addItem = (item) => {
         console.log("Adding new event to list");
         this.state = {
+          modalVisible: false,
           events: [
             ...this.state.events,
             item 
@@ -487,7 +488,7 @@ export default class RemindersScreen extends React.Component {
     const { modalVisible } = this.state;
     const { navigation } = this.props;
     return (
-      <View style={{ flex: 1, paddingBottom: 25, backgroundColor: '#ffff',}}>
+      <View style={{ flex: 1, paddingBottom: 20, backgroundColor: '#ffff',}}>
         <Modal
           animationType="slide"
           transparent={true}
@@ -543,7 +544,7 @@ export default class RemindersScreen extends React.Component {
         <TouchableOpacity activeOpacity={0.5} onPress={() => this.props.navigation.navigate('CreateReminder')}>
           <Image 
           source={require('../assets/new_reminder.png')}
-          style={{alignSelf: 'center', marginTop: 20,}}
+          style={{alignSelf: 'center', marginTop: 20}}
           />
       </TouchableOpacity>
       </View>
