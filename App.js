@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useState } from 'react/cjs/react.development';
+import { useState } from 'react';
 import pic1 from './assets/pic1.png';
  
 import MyTabs from './components/BottomNavBar';

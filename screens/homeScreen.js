@@ -9,7 +9,7 @@ import posts from "../data/samplePosts";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Items} from '../components/storage';
 import { useEffect } from 'react';
-import { useState } from 'react/cjs/react.development';
+import { useState } from 'react';
 
 export default function HomeScreen({ navigation }) {
   const [finishLoading, setfinishLoading] = useState(false);

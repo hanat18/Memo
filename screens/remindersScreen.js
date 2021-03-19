@@ -313,6 +313,7 @@ export default class RemindersScreen extends React.Component {
       var startTime = props.route.params.pickedDate.substring(11,15) + "-" + checkSwitch(props.route.params.pickedDate.substring(4,7)) + "-"+props.route.params.pickedDate.substring(8,10) + ' ' +  props.route.params.pickedTime.substring(0,5) + ":00";
       var endTime = props.route.params.pickedDate.substring(11,15) + "-" + checkSwitch(props.route.params.pickedDate.substring(4,7)) + "-"+props.route.params.pickedDate.substring(8,10) + ' ' +  props.route.params.pickedTime.substring(0,3) + (parseInt(props.route.params.pickedTime.substring(3,5) , 10 ) + 30) + ":00";
       console.log("endTime: ", startTime);
+      console.disableYellowBox = true;
       var newEvent = {
         start: startTime,
         end: endTime,
