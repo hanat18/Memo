@@ -87,6 +87,7 @@ export default function createAlbumScreen({navigation}) {
 
         // console.log("Before tap item: ", pressedTracker[item.id]);
         var tempObj = pressedTracker;
+        var currState = !tempObj[item.id]
         tempObj[item.id] = !tempObj[item.id]
 
 
@@ -97,15 +98,17 @@ export default function createAlbumScreen({navigation}) {
 
         // console.log("After tap item: ", pressedTracker[item.id])
         // console.log("After tap item: ", item.id, "\nstatus: ", pressedTracker[item.id]);
+        
 
-        if (pressedTracker[item.id] == true){
-          console.log("\nOP set to 0.5");
+        console.log("\nActing on: ", item.id);
+        if (currState == true){
+          console.log("OP set to 1");
           setIsPressed(isPressed - 1);
-          setOp(0.5);
+          setOp(1);
         }else {
           setIsPressed(isPressed + 1);
-          console.log("\nOP set to 1");
-            setOp(1);
+          console.log("\nOP set to 0.5");
+            setOp(0.5);
         }
 
         console.log("After tap item: ", pressedTracker[item.id])
@@ -184,6 +187,7 @@ export default function createAlbumScreen({navigation}) {
           style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
           />
       </TouchableOpacity>}
+
 
     </SafeAreaView>
   );
