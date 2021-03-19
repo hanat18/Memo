@@ -79,6 +79,7 @@ export default function createReminderScreen({navigation}){
     const [pickedTime, setPickedTime] = useState("00:00");
     const [pickedDate, setPickedDate] = useState("MM/DD/YYYY");
     const [title, setTitle] = useState();
+    const [isPicked, setIsPicked] = useState(false);
 
     const showDatePicker = () => {
         setDatePickerVisibility(true);
@@ -95,11 +96,13 @@ export default function createReminderScreen({navigation}){
     useEffect(()=> {
         // console.warn("A date has been picked: ", pickedDate);
         hideDatePicker();
+
     }, [pickedDate]);
 
     useEffect(()=> {
         // console.warn("A time has been picked: ", pickedTime);
         hideTimePicker();
+        
     }, [pickedTime]);
 
     const created =  async () => {
@@ -150,21 +153,31 @@ export default function createReminderScreen({navigation}){
                 <DateTimePickerModal 
                     isVisible={isTimePickerVisible}
                     mode="time"
-                    onConfirm={(selected) => setPickedTime(selected.toTimeString() )}
-                    onCancel={() => {setTimePickerVisibility(false);}}
+                    onConfirm={(selected) => {setPickedTime(selected.toTimeString()); setIsPicked(true);}}
+                    onCancel={() => {setTimePickerVisibility(false); }}
                 />
             </View>
 
             
-            
-            <View>
+            {isPicked && <View>
                 <TouchableOpacity activeOpacity={0.5} onPress={created}>
                     <Image
                     source={require('../assets/Create.png')}
                     style={{alignSelf: 'center', marginTop: 26,}}
                     />
                 </TouchableOpacity>
-            </View>
+            </View>}
+
+      {!isPicked && <View>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => Alert.alert("Make sure to pick a date and time!")}>
+                    <Image
+                    source={require('../assets/createGrey.png')}
+                    style={{alignSelf: 'center', marginTop: 26,}}
+                    />
+                </TouchableOpacity>
+            </View>}
+            
+            
             <View></View> 
                 
         </SafeAreaView>
