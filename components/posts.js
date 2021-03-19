@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, TouchableWithoutFeedback, Text, Image, TouchableOpacity, Modal, Button, SafeAreaView, Alert } from 'react-native';
 import {StyleSheet, Dimensions} from 'react-native';
-import { Video, AVPlaybackStatus } from 'expo-av';
+import { Video, Audio, AVPlaybackStatus } from 'expo-av';
 import { useReducer } from 'react';
 
 const Post = (props) => {
@@ -10,12 +10,51 @@ const Post = (props) => {
     const [status, setStatus] = React.useState({});
     const [isPlaying, setIsPlaying] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [sound, setSound] = React.useState();
+    const [isAudioPlaying, setIsAudioPlaying] = React.useState(false);
 
     // console.log("Triigger Warning: ", props.children.triggerWarning);
     // console.log("hi", modalVisible)
     // if (props.children.triggerWarning != 0){
     //   setModalVisible(true);
     // }
+
+    async function playSound() {
+      console.log('Loading Sound');
+      const { sound } = await Audio.Sound.createAsync(
+         require('../assets/arjunMemo.mp3')
+      );
+      setSound(sound);
+  
+      console.log('Playing Sound');
+      try {
+        await sound.playAsync(); 
+
+      } catch {
+
+      }
+      
+      
+    }
+  
+    React.useEffect(() => {
+      return sound
+        ? () => {
+            setIsAudioPlaying(!isAudioPlaying);
+            console.log('Unloading Sound');
+            sound.unloadAsync(); 
+            }
+        : undefined;
+    }, [sound]);
+
+
+    function playTheSound(){
+      setIsAudioPlaying(!isAudioPlaying);
+      
+      playSound();
+  }
+
+
 
   
     return (
@@ -49,10 +88,10 @@ const Post = (props) => {
           
           
           <View style={styles.uiContainer}>
-            <TouchableOpacity activeOpacity={0.5} onPress={() => {setIsPlaying(!isPlaying)}}>
+            <TouchableOpacity activeOpacity={0.5} onPress={playTheSound} >
               <Image
-              //onPress={() => {setIsPlaying(!isPlaying)}}
-              source={isPlaying ? require('../assets/pause_audio.png') : require('../assets/play_audio.png')}
+              
+              source={require('../assets/play_audio.png')}
               style={{alignSelf: 'center'}}
               />
           </TouchableOpacity>
