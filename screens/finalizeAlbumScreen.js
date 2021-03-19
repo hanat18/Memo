@@ -106,7 +106,7 @@ export default function finalizeAlbumScreen({navigation}){
             
             try {
               result = await AsyncStorage.getItem(post);
-              var content = JSON.parse(result);
+              var content = JSON.parse(result); 
 
                 if (result != null && post != "albums") {
                     var updatedAlbumMem = content[3]; 

@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+//	https://stanford.zoom.us/j/96461077394?pwd=bVQrU3pvVDZwb1NLMTE2dzgwd21Odz09
 
 
 export default function createAlbumScreen({navigation}) {
@@ -13,10 +14,10 @@ export default function createAlbumScreen({navigation}) {
   const [dataSource, setDataSource] = useState([]);
   const [finishLoading, setfinishLoading] = useState(false);
   const [toRender, setToRender] = useState([]);
-  const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(0);
   const [pressedTracker, setPressedTracker] = useState({});
   let notPressed;
-  const [op, setOp] = useState(0);
+  const [op, setOp] = useState(1);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -74,19 +75,32 @@ export default function createAlbumScreen({navigation}) {
   }, [navigation, pressedTracker]);
   
     const onPressHandler = (item) => {
-        if (op == 0){
-            setOp(0.5);
-        }else {
-            setOp(0);
-        }
-    
-        console.log("This is what pressedTracker looks like:\n", pressedTracker[item.id]);
+        // if(op == 0.5){
+        //   console.log("OP set to 1");
+        //   setOp(1);
+        // }else{
+        //   console.log("OP set to 0.5");
+        //   setOp(0.5);
+        // }
+
+        // console.log("Before tap item: ", pressedTracker[item.id]);
         var tempObj = pressedTracker;
         tempObj[item.id] = !tempObj[item.id]
         setPressedTracker(tempObj);
-        console.log("Second change", pressedTracker[item.id]);
+        // console.log("After tap item: ", pressedTracker[item.id])
+        // console.log("After tap item: ", item.id, "\nstatus: ", pressedTracker[item.id]);
 
+        if (pressedTracker[item.id] == true){
+          console.log("\nOP set to 0.5");
+          setIsPressed(isPressed - 1);
+          setOp(0.5);
+        }else {
+          setIsPressed(isPressed + 1);
+          console.log("\nOP set to 1");
+            setOp(1);
+        }
 
+        console.log("After tap item: ", pressedTracker[item.id])
     } 
     
 
@@ -103,9 +117,11 @@ export default function createAlbumScreen({navigation}) {
             marginBottom: 8,
             maxWidth: (Dimensions.get('window').width)/2,
             alignItems: 'center',
-            
+
           }}> 
-            <TouchableOpacity onPress={() => onPressHandler(item)} underlayColor={'gray'} >
+            
+            {/*Show if false*/}
+            <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: op}}>
 
             {item.format === "video" ? <Video 
                   ref={video}
@@ -122,7 +138,28 @@ export default function createAlbumScreen({navigation}) {
                     
               />
                   }
-            </TouchableOpacity>    
+            </TouchableOpacity>  
+
+            {/*Show if true*/} 
+
+            {/* {pressedTracker[item.id] && <TouchableOpacity onPress={() => onPressHandler(item)} >
+
+            {item.format === "video" ? <Video 
+                  ref={video}
+                  style={styles.video2}
+                  source={{
+                  uri: item.videoURI,
+                  }}
+                  resizeMode="cover"
+              />
+              : <Image
+                    style={styles.video2}
+                    source={{uri: item.videoURI}}
+                    //onError={(e) => console.log(e)}
+                    
+              />
+                  }
+            </TouchableOpacity> }  */}
         
 
 
@@ -134,12 +171,12 @@ export default function createAlbumScreen({navigation}) {
     />
 
 
-    <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
+    {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
           <Image 
           source={require('../assets/createAlbumBtn.png')}
           style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
           />
-      </TouchableOpacity>
+      </TouchableOpacity>}
 
     </SafeAreaView>
   );
@@ -155,6 +192,12 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: (Dimensions.get('window').width)/2 - 8,
     height: 200,
+  },
+  video2: {
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+    opacity: 0.5
   },
   buttons: {
     flexDirection: 'row',

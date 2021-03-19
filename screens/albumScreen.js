@@ -46,7 +46,7 @@ export default function AlbumScreen({ navigation }) {
         try {
           var result = await AsyncStorage.getItem("albums");
           albumArray = JSON.parse(result);
-          //console.log("The Albums in this page", albumArray);
+          console.log("The Albums in this page", albumArray);
         } catch{}
 
 
@@ -55,6 +55,7 @@ export default function AlbumScreen({ navigation }) {
           let items = Array.apply(null, Array(albumArray.length)).map((v, i) => {
             return {
               title: albumArray[i][0],
+              description: albumArray[i][1],
             };
           });
 
@@ -121,6 +122,7 @@ export default function AlbumScreen({ navigation }) {
 
           <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('ViewAlbum',{
             albumName: item.title,
+            albumDescription: item.description,
           })}>
             
             <Image

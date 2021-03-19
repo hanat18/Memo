@@ -15,9 +15,11 @@ export default function viewAlbumScreen({route, navigation}) {
   const [toRender, setToRender] = useState([]);
   const [isPressed, setIsPressed] = useState(false);
   const [pressedTracker, setPressedTracker] = useState({});
-  let notPressed;
+  const [totalMemos, setTotalMemos] = useState(0);
   const [op, setOp] = useState(0);
-  const { albumName } = route.params;
+  const { albumName, albumDescription } = route.params;
+  const [numSelected, setNumSelected] = useState(0);
+
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -46,9 +48,8 @@ export default function viewAlbumScreen({route, navigation}) {
             var content = JSON.parse(result);
   
             if (result != null && post != "albums") {
-              
-
-              console.log("Array Album", content[3]);
+              // console.log("Array Album", content[3]);
+              setTotalMemos(totalMemos + 1);
 
               if (content[3].includes(albumName)) {
                 console.log("Activated");
@@ -81,6 +82,7 @@ export default function viewAlbumScreen({route, navigation}) {
     });
     return unsubscribe;
   }, [navigation, pressedTracker]);
+
   
     const onPressHandler = (item) => {
         if (op == 0){
@@ -96,13 +98,58 @@ export default function viewAlbumScreen({route, navigation}) {
         console.log("Second change", pressedTracker[item.id]);
 
     } 
+
+    const deleteMemos =  async () => {
+      var toDelete = [];
+
+      for (const property in pressedTracker) {
+        if (pressedTracker[property] === true) {
+          toDelete.push(property);
+        }
+      }
+
+      
+
+
+
+     
+    }
     
 
   return (
     <SafeAreaView style={styles.container}>
     <ScrollView>
-    <Text style={styles.title}> {albumName} </Text>
+    {/* <Text style={styles.title}> {albumName} </Text> */}
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', margin: 30}} onPress={() => {navigation.navigate("Albums");}}>
+      <Image
+        source={require("../assets/albumTitle.png")}
+        style={styles.albumTitle}
+      />
+      <Text style={{position: 'absolute', fontSize: 18}}>{albumName}</Text>
+    </View>
+
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'black',
+        borderBottomWidth: 1,}} onPress={() => {navigation.navigate("Home");}}>
+      <Image
+        source={require("../assets/albumPlay.png")}
+        style={styles.albumTitle}
+        onPress={() => console.log("Pressed")}
+      />
+      <Text style={{position: 'relative', fontSize: 20, marginTop: 12, marginBottom: 10}}>Play Album Feed</Text>
+    </View>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-start', marginLeft: 40}} onPress={() => {navigation.navigate("Home");}}>
+      <View style={{flexDirection: 'column', alignItems: 'flex-start'}}>
+        <Text style={{fontSize: 28, alignSelf: 'center', fontWeight: 'bold'}}>{totalMemos}</Text>
+        <Text style={{fontSize: 16}}>Memos</Text>
+      </View>
+      <View style={{flex: 1, flexDirection: 'column', justifyContent: 'center'}}>
+        <Text style={{fontSize: 18, fontWeight: 'bold', marginTop: 20, marginLeft: 20, color: '#616161'}}>Description:</Text>
+        <Text style={{position: 'relative', fontSize: 16,  marginBottom: 20, marginLeft: 20, flexWrap: 'wrap'}} >{albumDescription}</Text>
+      </View>
+    </View>
     <FlatList
+      // style={{borderTopColor: 'black',
+      // borderTopWidth: 1,}}
       data={toRender}
       renderItem={({item}) => (
         <View
@@ -112,7 +159,11 @@ export default function viewAlbumScreen({route, navigation}) {
             marginBottom: 8,
             maxWidth: (Dimensions.get('window').width)/2,
             alignItems: 'center',
-            
+            // borderBottomColor: 'black',
+            // borderBottomWidth: 1,
+            // borderRightColor: 'black',
+            // borderRightWidth: 1,
+            // marginTop: 4,
           }}>     
         {pressedTracker[item.id] === true ? <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: 0.5}}>
             <Video
@@ -148,12 +199,12 @@ export default function viewAlbumScreen({route, navigation}) {
 
 
     </ScrollView>
-    <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
+    {/* <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
           <Image 
           source={require('../assets/createAlbumBtn.png')}
           style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
           />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
     </SafeAreaView>
   );
@@ -182,4 +233,8 @@ const styles = StyleSheet.create({
     padding: 30,
     fontSize: 32,
   },
+  albumTitle: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+  }
 });

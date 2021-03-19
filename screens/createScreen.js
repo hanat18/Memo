@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Image, Platform, Text, View, Button, SafeAreaView, Flexbox, ScrollView, Modal, Alert} from 'react-native';
+import { StyleSheet, Image, Platform, Text, View, Button, SafeAreaView, Flexbox, ScrollView, Modal, Alert, Dimensions} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -41,15 +41,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 18,
-  }       
+  },
+  video: {
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+  },       
 });
 
 export default function CreateScreen({ navigation }) {
+  const video = React.useRef(null);
   const [image, setImage] = useState(null);
+  const [format, setFormat] = useState();
   const [currTrigger, setCurrTrigger] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState();
   const [objectType, setObjectType] = useState();
   const [albums, setAlbums] = useState();
+  const [isPicked, setIsPicked] = useState(false);
 
   // useEffect(() => {
   //   const unsubscribe = navigation.addListener('focus', () => {
@@ -86,6 +94,7 @@ export default function CreateScreen({ navigation }) {
   // }, [navigation]);
   
   useEffect(() => {
+    // setIsPicked(false);
     (async () => {
       if (Platform.OS !== 'web') {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -104,20 +113,25 @@ export default function CreateScreen({ navigation }) {
       quality: 1,
     });
 
-    // console.log("TYPE", result);
+    // console.log("TYPE", result.uri);
     setObjectType(result.type);
+    setIsPicked(true);
 
     if (!result.cancelled) {
       setImage(result.uri);
+      setFormat(result.format);
     }
   };
 
   const goHomeScreen =  async () => {
     
     try {
+      
+      console.log("Video? ", image.format)
       await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger]));
       Alert.alert("Success! \n You have successfully uploaded your Memo.");
       navigation.navigate('HomeTab');
+      setIsPicked(false);
     } catch {}
 
   }
@@ -128,13 +142,39 @@ export default function CreateScreen({ navigation }) {
         <Text style={styles.title}> Create A Memo</Text>
         <Text style={styles.subtitle}> Upload a Media</Text>
 
+      {isPicked && format === "video" ? 
+      <TouchableOpacity activeOpacity={0.5} onPress={pickImage}>
+          <Video 
+            ref={"video"}
+            style={styles.video}
+            source={{
+            uri: image
+            }}
+        />
+      </TouchableOpacity>
+      : 
+      // {/* {isPicked ? <TouchableOpacity activeOpacity={0.5} onPress={pickImage}>
+      //     <Image 
+      //     // source={isPicked ? {uri: image} : require('../assets/addImage.png')}
+
+      //     // source={{uri: image}}
+      //     source={{uri: image}}
+      //     style={{alignSelf: 'center', width: 320, height: 120, borderRadius: 10}}
+      //     onPress={pickImage}
+      //     />
+      // </TouchableOpacity>
+      // : */}
       <TouchableOpacity activeOpacity={0.5} onPress={pickImage}>
           <Image 
-          source={require('../assets/image.png')}
-          style={{alignSelf: 'center'}}
+          source={isPicked ? {uri: image} : require('../assets/addImage.png')}
+
+          // source={{uri: image}}
+          // source={require('../assets/addImage.png')}
+          style={{alignSelf: 'center', width: 323, height: 125, borderRadius: 10}}
           onPress={pickImage}
           />
       </TouchableOpacity>
+      }
       </View>
 
       <View>
@@ -183,7 +223,7 @@ export default function CreateScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <View style={{paddingTop: 48,  justifyContent: 'flex-end'}}>
+      {isPicked && <View style={{marginTop: 8}}>
       <TouchableOpacity activeOpacity={0.5} onPress={goHomeScreen}>
           <Image
           source={require('../assets/Create.png')}
@@ -191,7 +231,7 @@ export default function CreateScreen({ navigation }) {
           onPress={goHomeScreen}
           />
       </TouchableOpacity>
-      </View>
+      </View>}
     </ScrollView>
     
   );
