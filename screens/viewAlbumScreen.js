@@ -109,10 +109,6 @@ export default function viewAlbumScreen({route, navigation}) {
       }
 
       
-
-
-
-     
     }
     
 
@@ -170,7 +166,7 @@ export default function viewAlbumScreen({route, navigation}) {
                 ref={video}
                 style={styles.video}
                 source={{
-                uri: item.videoURI,
+                uri: item,
                 }}
                 resizeMode="cover"
                 

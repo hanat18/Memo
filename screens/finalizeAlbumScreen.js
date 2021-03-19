@@ -6,6 +6,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
 import EventCalendar from 'react-native-events-calendar'
 import { TextInput } from 'react-native-gesture-handler';
+import * as ImagePicker from 'expo-image-picker';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -39,7 +40,22 @@ const styles = StyleSheet.create({
       width: 326,
       height: 50,
       borderStyle: 'solid',
-      
+    }, 
+    textEntry2: {
+      justifyContent: 'center',
+      alignSelf: 'center',
+      textAlign: 'left',
+      marginTop: 26,
+      marginBottom: 16,
+      paddingTop: 8,
+      paddingBottom: 150,
+      paddingLeft: 8,
+      fontSize: 20,
+      borderWidth: 1,
+      borderRadius: 5,
+      width: 326,
+      // height: 150,
+      borderStyle: 'solid',
     }, 
     bottomButton: {
       position: 'absolute',
@@ -69,6 +85,16 @@ const styles = StyleSheet.create({
       }, 
       buttonText: {
           color: "#ffffff",
+      },
+      subtitle2: {
+        justifyContent: 'flex-start',
+        alignSelf: 'flex-start',
+        paddingTop: 32,
+        paddingLeft: 26,
+        fontSize: 20,
+      }, 
+      buttonText: {
+          color: "#ffffff",
       }
   });
 
@@ -78,17 +104,18 @@ export default function finalizeAlbumScreen({navigation}){
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
     const [postsToAdd, setPostsToAdd] = useState(); 
+    const [image, setImage] = useState(null);
+    const [format, setFormat] = useState();
+    const [objectType, setObjectType] = useState();
+    const [isPicked, setIsPicked] = useState(false);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             const loadData =  async () => {
                 var test = await AsyncStorage.getItem("albums");
             }
-
             loadData();
           
-              
-              
         });
         return unsubscribe;
       }, [navigation]);
@@ -99,6 +126,7 @@ export default function finalizeAlbumScreen({navigation}){
 
         try {
             keys = await AsyncStorage.getAllKeys()
+            console.log("ALL KEYS: \n", keys)
           } catch{}
 
           for (var i = 0; i < keys.length; i++) {
@@ -110,7 +138,6 @@ export default function finalizeAlbumScreen({navigation}){
 
                 if (result != null && post != "albums") {
                     var updatedAlbumMem = content[3]; 
-                     
                 
                     if (postsToAdd.includes(post)) {
                         var currAlbums = albumMem; 
@@ -126,7 +153,7 @@ export default function finalizeAlbumScreen({navigation}){
               
               
             } catch(e){
-              //console.log("ERROR: ", e)
+              console.log("ERROR: ", e)
             }
           }
         
@@ -151,9 +178,6 @@ export default function finalizeAlbumScreen({navigation}){
             } catch {
 
             }
-        
-
-
 
             
         } catch {}
@@ -162,27 +186,49 @@ export default function finalizeAlbumScreen({navigation}){
         Alert.alert("Success! \n You have successfully created your album!");
         navigation.navigate('Albums');
 
-      
-
-    
-    
       }
 
-
+      const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.All,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+    
+        // console.log("TYPE", result.uri);
+        setObjectType(result.type);
+        setIsPicked(true);
+    
+        if (!result.cancelled) {
+          setImage(result.uri);
+          setFormat(result.format);
+        }
+      };
 
     return(
         <SafeAreaView>
             <View>
             <Text style={styles.title}> Create your Album</Text>
             <TextInput style={styles.textEntry} placeholder="album title..." onChangeText={(albumTitle) => {setTitle(albumTitle);}}></TextInput>
-            <TextInput style={styles.textEntry} placeholder="description..." onChangeText={(albumDesc) => {setDescription(albumDesc);}}></TextInput>
+            <TouchableOpacity activeOpacity={0.5} onPress={pickImage}>
+              <Image 
+              source={isPicked ? {uri: image} : require('../assets/addImage.png')}
 
+              // source={{uri: image}}
+              // source={require('../assets/addImage.png')}
+              style={{alignSelf: 'center', width: 323, height: 125, borderRadius: 10}}
+              onPress={pickImage}
+              />
+          </TouchableOpacity>
+          <Text style={styles.subtitle2}> Add Description:</Text>
+            <TextInput style={styles.textEntry2} placeholder="album description..." onChangeText={(albumDesc) => {setDescription(albumDesc);}}></TextInput>
             
             <View>
                 <TouchableOpacity activeOpacity={0.5} onPress={goAlbumScreen}>
                     <Image
                     source={require('../assets/Create.png')}
-                    style={{alignSelf: 'center', marginTop: 26,}}
+                    style={{alignSelf: 'center', marginTop: 10,}}
                     />
                 </TouchableOpacity>
             </View> 

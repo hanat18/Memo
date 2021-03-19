@@ -15,7 +15,8 @@ export default function createAlbumScreen({navigation}) {
   const [finishLoading, setfinishLoading] = useState(false);
   const [toRender, setToRender] = useState([]);
   const [isPressed, setIsPressed] = useState(0);
-  const [pressedTracker, setPressedTracker] = useState({});
+  // const [pressedTracker, setPressedTracker] = useState({});
+  let pressedTracker = {}
   let notPressed;
   const [op, setOp] = useState(1);
 
@@ -63,7 +64,8 @@ export default function createAlbumScreen({navigation}) {
           }
         }
   
-        setPressedTracker(postObj);
+        //setPressedTracker(postObj)
+        pressedTracker = postObj;
         notPressed = postObj;
         setToRender(finalArray);
         setfinishLoading(true);
@@ -86,7 +88,13 @@ export default function createAlbumScreen({navigation}) {
         // console.log("Before tap item: ", pressedTracker[item.id]);
         var tempObj = pressedTracker;
         tempObj[item.id] = !tempObj[item.id]
-        setPressedTracker(tempObj);
+
+
+        pressedTracker = tempObj;
+        // setPressedTracker(tempObj);
+
+
+
         // console.log("After tap item: ", pressedTracker[item.id])
         // console.log("After tap item: ", item.id, "\nstatus: ", pressedTracker[item.id]);
 
@@ -121,18 +129,17 @@ export default function createAlbumScreen({navigation}) {
           }}> 
             
             {/*Show if false*/}
-            <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: op}}>
+            <TouchableOpacity onPress={() => onPressHandler(item)}>
 
             {item.format === "video" ? <Video 
                   ref={video}
-                  style={styles.video}
-                  source={{
-                  uri: item.videoURI,
+                  style={pressedTracker[item.id] ? styles.selectedImage : styles.normalImage}
+                  source={{uri: item.videoURI
                   }}
                   resizeMode="cover"
               />
               : <Image
-                    style={styles.video}
+                    style={pressedTracker[item.id] ? styles.selectedImage : styles.normalImage}
                     source={{uri: item.videoURI}}
                     //onError={(e) => console.log(e)}
                     
@@ -187,6 +194,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#ffff',
+  },
+  selectedImage: {
+    opacity: 0.5,
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+  },
+  normalImage: {
+    color: 1,
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
   },
   video: {
     alignSelf: 'center',
