@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
       buttonText: {
           color: "#ffffff",
       }
-  });
+  }); 
 
 export default function createReminderScreen({navigation}){
     const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -93,22 +93,20 @@ export default function createReminderScreen({navigation}){
     };
 
     useEffect(()=> {
-        console.warn("A date has been picked: ", pickedDate);
+        // console.warn("A date has been picked: ", pickedDate);
         hideDatePicker();
     }, [pickedDate]);
 
     useEffect(()=> {
-        console.warn("A time has been picked: ", pickedTime);
+        // console.warn("A time has been picked: ", pickedTime);
         hideTimePicker();
     }, [pickedTime]);
 
     const created =  async () => {
-        let passing;
         try {
-            
           passing = await AsyncStorage.setItem(title, JSON.stringify([pickedTime, pickedDate]));
         } catch {}
-            console.log("*********TITLE", title);
+            // console.log("*********TITLE", title);
             Alert.alert("Success! \n You have successfully created a new reminder.");
             navigation.navigate("Reminders", {
                 title: title,
