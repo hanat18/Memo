@@ -317,7 +317,7 @@ export default function viewAlbumScreen({route, navigation}) {
         
                       />
               }
-</TouchableOpacity> 
+              </TouchableOpacity> 
 
 
         </View>
@@ -329,8 +329,8 @@ export default function viewAlbumScreen({route, navigation}) {
 
     {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={() => setModalVisible(true)}>
               <Image 
-              source={require('../assets/createAlbumBtn.png')}
-              style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
+              source={require('../assets/deleteMemo.png')}
+              style={{alignSelf: 'center', marginTop: 75}}
               />
           </TouchableOpacity>}
 
