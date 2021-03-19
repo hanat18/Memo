@@ -5,146 +5,228 @@ import React, { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+//	https://stanford.zoom.us/j/96461077394?pwd=bVQrU3pvVDZwb1NLMTE2dzgwd21Odz09
+
+
+export default function createAlbumScreen({navigation}) {
+  const video = React.useRef(null);
+  const [dataSource, setDataSource] = useState([]);
+  const [finishLoading, setfinishLoading] = useState(false);
+  const [toRender, setToRender] = useState([]);
+  const [isPressed, setIsPressed] = useState(0);
+  // const [pressedTracker, setPressedTracker] = useState({});
+  let pressedTracker = {}
+  let notPressed;
+  const [op, setOp] = useState(1);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      //console.log("I am focused")
+      const loadData =  async () => {
+        var keys; 
+        var tempObj = {};
+        var finalArray = [];
+        var postObj = {};
+
+
+        
+  
+        try {
+          keys = await AsyncStorage.getAllKeys()
+        } catch{}
+          
+        //Loops through all keys and retrieves the attaches URIs
+        
+        for (var i = 0; i < keys.length; i++) {
+          let post = keys[i];
+          
+          try {
+            result = await AsyncStorage.getItem(post);
+            var content = JSON.parse(result);
+    
+  
+            if (result != null && post != "albums") {
+              tempObj = {
+                'id': post,
+                "videoURI": content[0],
+                "format": content[1],
+                "triggerWarning": content[2],
+              }
+              //Dynamically creates a "toRender" object and stores it in state
+              postObj[tempObj.id] = false;
+              
+              finalArray.push(tempObj);
+              }
+            
+          } catch(e){
+            //console.log("ERROR: ", e)
+          }
+        }
+  
+        //setPressedTracker(postObj)
+        pressedTracker = postObj;
+        notPressed = postObj;
+        setToRender(finalArray);
+        setfinishLoading(true);
+      }
+  
+      loadData();
+    });
+    return unsubscribe;
+  }, [navigation, pressedTracker]);
+  
+    const onPressHandler = (item) => {
+        // if(op == 0.5){
+        //   console.log("OP set to 1");
+        //   setOp(1);
+        // }else{
+        //   console.log("OP set to 0.5");
+        //   setOp(0.5);
+        // }
+
+        // console.log("Before tap item: ", pressedTracker[item.id]);
+        var tempObj = pressedTracker;
+        tempObj[item.id] = !tempObj[item.id]
+
+
+        pressedTracker = tempObj;
+        // setPressedTracker(tempObj);
+
+
+
+        // console.log("After tap item: ", pressedTracker[item.id])
+        // console.log("After tap item: ", item.id, "\nstatus: ", pressedTracker[item.id]);
+
+        // if (pressedTracker[item.id] == true){
+        //   console.log("\nOP set to 0.5");
+        //   setIsPressed(isPressed - 1);
+        //   setOp(0.5);
+        // }else {
+        //   setIsPressed(isPressed + 1);
+        //   console.log("\nOP set to 1");
+        //     setOp(1);
+        // }
+
+        console.log("After tap item: ", pressedTracker[item.id])
+    } 
+    
+
+  return (
+    <SafeAreaView style={styles.container}>
+    <Text style={styles.title}> Tap to Select Memos </Text>
+    <FlatList
+      data={toRender}
+      renderItem={({item}) => (
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'column',
+            marginBottom: 8,
+            maxWidth: (Dimensions.get('window').width)/2,
+            alignItems: 'center',
+
+          }}> 
+            
+            {/*Show if false*/}
+            <TouchableOpacity onPress={() => onPressHandler(item)}>
+
+            {item.format === "video" ? <Video 
+                  ref={video}
+                  style={pressedTracker[item.id] ? styles.selectedImage : styles.normalImage}
+                  source={{uri: item.videoURI}}
+                  resizeMode="cover"
+              />
+              : <Image
+                    style={pressedTracker[item.id] ? styles.selectedImage : styles.normalImage}
+                    source={{uri: item.videoURI}}
+                    //onError={(e) => console.log(e)}
+                    
+              />
+                  }
+            </TouchableOpacity>  
+
+            {/*Show if true*/} 
+
+            {/* {pressedTracker[item.id] && <TouchableOpacity onPress={() => onPressHandler(item)} >
+
+            {item.format === "video" ? <Video 
+                  ref={video}
+                  style={styles.video2}
+                  source={{
+                  uri: item.videoURI,
+                  }}
+                  resizeMode="cover"
+              />
+              : <Image
+                    style={styles.video2}
+                    source={{uri: item.videoURI}}
+                    //onError={(e) => console.log(e)}
+                    
+              />
+                  }
+            </TouchableOpacity> }  */}
+        
+
+
+        </View>
+      )}
+      //Setting the number of column
+      numColumns={2}
+      keyExtractor={(item, index) => index}
+    />
+
+
+    {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
+          <Image 
+          source={require('../assets/createAlbumBtn.png')}
+          style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
+          />
+      </TouchableOpacity>}
+
+    </SafeAreaView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: 'white',
-    
+    backgroundColor: '#ffff',
   },
-  imageThumbnail: {
+  selectedImage: {
+    opacity: 0.5,
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+  },
+  normalImage: {
+    color: 1,
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+  },
+  video: {
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+  },
+  video2: {
+    alignSelf: 'center',
+    width: (Dimensions.get('window').width)/2 - 8,
+    height: 200,
+    opacity: 0.5
+  },
+  buttons: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
-    height: Dimensions.get('window').height - 180,
-    position: 'absolute',
   },
   title: {
     justifyContent: 'center',
     alignSelf: 'center',
     textAlign: 'center',
-    padding: 40,
+    padding: 30,
     fontSize: 32,
   },
-  subtitle: {
-    justifyContent: 'flex-start',
-    alignSelf: 'center',
-    paddingTop: 12,
-    paddingBottom: 8,
-    fontSize: 20,
-  }, 
 });
-
-export default function createAlbumScreen({ navigation }) {
-  const video = React.useRef(null);
-  const [dataSource, setDataSource] = useState([]);
-  const [finishLoading, setfinishLoading] = useState(false);
-  const [toRender, setToRender] = useState([]);
-
-//   useEffect(() => {
-//     const unsubscribe = navigation.addListener('focus', () => {
-//       console.log("I am focused")
-//       const loadData =  async () => {
-//         var keys; 
-//         var tempObj = {};
-//         var finalArray = [];
-        
-  
-//         try {
-//           keys = await AsyncStorage.getAllKeys()
-//           //console.log("keys", keys)
-//         } catch{}
-          
-//         //Loops through all keys and retrieves the attaches URIs
-        
-//         for (var i = 0; i < keys.length; i++) {
-//           let post = keys[i];
-//           //console.log("post", post)
-          
-//           try {
-//             result = await AsyncStorage.getItem(post);
-//             var content = JSON.parse(result);
-
-//             // console.log("fetching trigger warning....", content[2])
-//             // triggerWarning = content[2];
-//             // if (triggerWarning != 0){
-//             //   setModalVisible(true);
-//             // }
-    
-  
-//             if (result != null) {
-//               tempObj = {
-//                 'id': post,
-//                 "videoURI": content[0],
-//                 "format": content[1],
-//                 "triggerWarning": content[2],
-//               }
-//               //Dynamically creates a "toRender" object and stores it in state
-//               finalArray.push(tempObj)
-//               //console.log("tempObj", tempObj)
-//               }
-            
-            
-//           } catch(e){
-//             //console.log("ERROR: ", e)
-//           }
-//         }
-  
-//         setToRender(finalArray);
-//         console.log("Create Album Data", finalArray);
-//         setfinishLoading(true);
-//       }
-  
-//       loadData();
-//     });
-//     return unsubscribe;
-//   }, [navigation]);
-  
-
-  return (
-      <View>
-          <TouchableHighlight style={{justifyContent: 'center'}} >
-            <Video 
-                ref={video}
-                shouldPlay={false}
-                resizeMode="contain"
-                source={{uri: 'http://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4'}}
-                // onError={(e) => console.log(item.videoURI)}
-            />
-           </TouchableHighlight>
-
-        </View>
-
-  );
-}
-
-/* <Text style={styles.title}> My Memory Albums</Text>
-      <FlatList
-        data={toRender}
-        renderItem={({item}) => (
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-              marginBottom: 40,
-              maxWidth: (Dimensions.get('window').width)/2,
-              alignItems: 'center',
-            }}>
-
-            <Video 
-                // ref={video}
-                style={styles.imageThumbnail}
-                // shouldPlay={false}
-                source={{uri: item.videoURI}}
-                onError={(e) => console.log(item.videoURI)}
-            />
-            {console.log("J")}
-            <Text style={styles.subtitle}> {item.id}</Text>
-          </View>
-        )}
-        //Setting the number of column
-        numColumns={2}
-        keyExtractor={(item, index) => index}
-      /> */
-

@@ -135,10 +135,6 @@ export default function viewAlbumScreen({route, navigation}) {
       }
 
       
-
-
-
-     
     }
     
 
@@ -220,50 +216,35 @@ export default function viewAlbumScreen({route, navigation}) {
             marginBottom: 8,
             maxWidth: (Dimensions.get('window').width)/2,
             alignItems: 'center',
-
-          }}> 
-            
-            {/*Show if false*/}
-            <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: op}}>
-
-            {item.format === "video" ? <Video 
-                  ref={video}
-                  style={styles.video}
-                  source={{
-                  uri: item.videoURI,
-                  }}
-                  resizeMode="cover"
-              />
-              : <Image
-                    style={styles.video}
-                    source={{uri: item.videoURI}}
-                    //onError={(e) => console.log(e)}
-                    
-              />
-                  }
-            </TouchableOpacity>  
-
-            {/*Show if true*/} 
-
-            {/* {pressedTracker[item.id] && <TouchableOpacity onPress={() => onPressHandler(item)} >
-
-            {item.format === "video" ? <Video 
-                  ref={video}
-                  style={styles.video2}
-                  source={{
-                  uri: item.videoURI,
-                  }}
-                  resizeMode="cover"
-              />
-              : <Image
-                    style={styles.video2}
-                    source={{uri: item.videoURI}}
-                    //onError={(e) => console.log(e)}
-                    
-              />
-                  }
-            </TouchableOpacity> }  */}
-        
+            // borderBottomColor: 'black',
+            // borderBottomWidth: 1,
+            // borderRightColor: 'black',
+            // borderRightWidth: 1,
+            // marginTop: 4,
+          }}>     
+        {pressedTracker[item.id] === true ? <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: 0.5}}>
+            <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                uri: item,
+                }}
+                resizeMode="cover"
+                
+            />
+            </TouchableOpacity>
+            :
+            <TouchableOpacity onPress={() => onPressHandler(item)}>
+            <Video
+                ref={video}
+                style={styles.video}
+                source={{
+                uri: item.videoURI,
+                }}
+                resizeMode="cover"
+                
+            />
+            </TouchableOpacity>}
 
 
         </View>
