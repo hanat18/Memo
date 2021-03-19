@@ -128,7 +128,7 @@ export default function CreateScreen({ navigation }) {
     try {
       
       console.log("Video? ", image.format)
-      await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger]));
+      await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger, []]));
       Alert.alert("Success! \n You have successfully uploaded your Memo.");
       navigation.navigate('HomeTab');
       setIsPicked(false);

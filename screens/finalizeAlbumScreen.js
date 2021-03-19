@@ -74,13 +74,18 @@ const styles = StyleSheet.create({
 
 
 
-export default function finalizeAlbumScreen({navigation}){
+export default function finalizeAlbumScreen({route, navigation}){
     const [title, setTitle] = useState();
     const [description, setDescription] = useState();
     const [postsToAdd, setPostsToAdd] = useState(); 
+    const { add } = route.params;
+
+
+    
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
+            setPostsToAdd(add);
             const loadData =  async () => {
                 var test = await AsyncStorage.getItem("albums");
             }
@@ -109,15 +114,17 @@ export default function finalizeAlbumScreen({navigation}){
               var content = JSON.parse(result); 
 
                 if (result != null && post != "albums") {
-                    var updatedAlbumMem = content[3]; 
+                  
+                  var updatedAlbumMem = content[3]; 
+                  
                      
-                
                     if (postsToAdd.includes(post)) {
-                        var currAlbums = albumMem; 
-                        currAlbums.push[title];
-                        updatedAlbumMem = currAlbums;
+
+
+                        updatedAlbumMem.push(title);
 
                         var newData = [content[0], content[1], content[2], updatedAlbumMem];
+                        console.log("Post", post, "to ", newData)
 
                         await AsyncStorage.setItem(post, JSON.stringify(newData));
 

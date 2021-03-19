@@ -105,6 +105,25 @@ export default function createAlbumScreen({navigation}) {
 
         console.log("After tap item: ", pressedTracker[item.id])
     } 
+
+    // () => navigation.navigate('FinalizeAlbum', {
+    //   add: ,
+    // })
+
+    const goToNextScreen =  async () => {
+      var selected = [];
+      for (var property in pressedTracker) {
+        if (pressedTracker[property] === true) {
+          selected.push(property);
+        }
+      }
+
+      console.log("Selected", selected);
+
+      navigation.navigate('FinalizeAlbum', {add: selected});
+    
+  
+    }
     
 
   return (
@@ -174,7 +193,8 @@ export default function createAlbumScreen({navigation}) {
     />
 
 
-    {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={() => navigation.navigate('FinalizeAlbum')}>
+
+    {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={goToNextScreen}>
           <Image 
           source={require('../assets/createAlbumBtn.png')}
           style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}

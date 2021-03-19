@@ -46,7 +46,7 @@ export default function AlbumScreen({ navigation }) {
         try {
           var result = await AsyncStorage.getItem("albums");
           albumArray = JSON.parse(result);
-          console.log("The Albums in this page", albumArray);
+          //console.log("The Albums in this page", albumArray);
         } catch{}
 
 

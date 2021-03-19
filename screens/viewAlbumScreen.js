@@ -7,18 +7,23 @@ import * as ImagePicker from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+let { widths } = Dimensions.get('window').width - 180;
+
 
 export default function viewAlbumScreen({route, navigation}) {
   const video = React.useRef(null);
   const [dataSource, setDataSource] = useState([]);
   const [finishLoading, setfinishLoading] = useState(false);
   const [toRender, setToRender] = useState([]);
-  const [isPressed, setIsPressed] = useState(false);
+  const [isPressed, setIsPressed] = useState(0);
   const [pressedTracker, setPressedTracker] = useState({});
   const [totalMemos, setTotalMemos] = useState(0);
-  const [op, setOp] = useState(0);
+  const [op, setOp] = useState(1);
   const { albumName, albumDescription } = route.params;
   const [numSelected, setNumSelected] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+
+
 
 
   useEffect(() => {
@@ -52,7 +57,7 @@ export default function viewAlbumScreen({route, navigation}) {
               setTotalMemos(totalMemos + 1);
 
               if (content[3].includes(albumName)) {
-                console.log("Activated");
+                console.log(post);
                 tempObj = {
                   'id': post,
                   "videoURI": content[0],
@@ -75,7 +80,9 @@ export default function viewAlbumScreen({route, navigation}) {
         }
   
         setfinishLoading(true);
+        setTotalMemos(finalArray.length);
         setToRender(finalArray);
+        console.log("toRender", finalArray);
       }
   
       loadData();
@@ -84,22 +91,41 @@ export default function viewAlbumScreen({route, navigation}) {
   }, [navigation, pressedTracker]);
 
   
-    const onPressHandler = (item) => {
-        if (op == 0){
-            setOp(0.5);
-        }else{
-            setOp(0);
-        }
-    
-        console.log("This is what pressedTracker looks like:\n", pressedTracker[item.id]);
-        var tempObj = pressedTracker;
-        tempObj[item.id] = !tempObj[item.id]
-        setPressedTracker(tempObj);
-        console.log("Second change", pressedTracker[item.id]);
+  const onPressHandler = (item) => {
+    // if(op == 0.5){
+    //   console.log("OP set to 1");
+    //   setOp(1);
+    // }else{
+    //   console.log("OP set to 0.5");
+    //   setOp(0.5);
+    // }
 
-    } 
+    // console.log("Before tap item: ", pressedTracker[item.id]);
+    var tempObj = pressedTracker;
+    var currState = !tempObj[item.id]
+    tempObj[item.id] = !tempObj[item.id]
+    setPressedTracker(tempObj);
+    // console.log("After tap item: ", pressedTracker[item.id])
+    // console.log("After tap item: ", item.id, "\nstatus: ", pressedTracker[item.id]);
+    
+
+    console.log("\nActing on: ", item.id);
+    if (currState == true){
+      console.log("OP set to 1");
+      setIsPressed(isPressed - 1);
+      setOp(1);
+    }else {
+      setIsPressed(isPressed + 1);
+      console.log("\nOP set to 0.5");
+        setOp(0.5);
+    }
+
+    console.log("After tap item: ", pressedTracker[item.id])
+}
 
     const deleteMemos =  async () => {
+
+      Alert.alert("Are you sure you want to delete?")
       var toDelete = [];
 
       for (const property in pressedTracker) {
@@ -147,9 +173,44 @@ export default function viewAlbumScreen({route, navigation}) {
         <Text style={{position: 'relative', fontSize: 16,  marginBottom: 20, marginLeft: 20, flexWrap: 'wrap'}} >{albumDescription}</Text>
       </View>
     </View>
+
+    <Modal
+        animationType="slide"
+        transparent={true}
+        // backgroundImage={!modalVisible && require('../assets/blur.png')}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTextTitle}>Are you sure?</Text>
+            <Text style={styles.modalSubText}>You're about to call your caregiver</Text>
+            <View style={styles.rowPopup}> 
+            <TouchableOpacity
+              style={[styles.button, styles.buttonGreyClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle} >Call</Text>
+              
+            </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+
+
+
     <FlatList
-      // style={{borderTopColor: 'black',
-      // borderTopWidth: 1,}}
       data={toRender}
       renderItem={({item}) => (
         <View
@@ -159,35 +220,50 @@ export default function viewAlbumScreen({route, navigation}) {
             marginBottom: 8,
             maxWidth: (Dimensions.get('window').width)/2,
             alignItems: 'center',
-            // borderBottomColor: 'black',
-            // borderBottomWidth: 1,
-            // borderRightColor: 'black',
-            // borderRightWidth: 1,
-            // marginTop: 4,
-          }}>     
-        {pressedTracker[item.id] === true ? <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: 0.5}}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={{
-                uri: item.videoURI,
-                }}
-                resizeMode="cover"
-                
-            />
-            </TouchableOpacity>
-            :
-            <TouchableOpacity onPress={() => onPressHandler(item)}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={{
-                uri: item.videoURI,
-                }}
-                resizeMode="cover"
-                
-            />
-            </TouchableOpacity>}
+
+          }}> 
+            
+            {/*Show if false*/}
+            <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: op}}>
+
+            {item.format === "video" ? <Video 
+                  ref={video}
+                  style={styles.video}
+                  source={{
+                  uri: item.videoURI,
+                  }}
+                  resizeMode="cover"
+              />
+              : <Image
+                    style={styles.video}
+                    source={{uri: item.videoURI}}
+                    //onError={(e) => console.log(e)}
+                    
+              />
+                  }
+            </TouchableOpacity>  
+
+            {/*Show if true*/} 
+
+            {/* {pressedTracker[item.id] && <TouchableOpacity onPress={() => onPressHandler(item)} >
+
+            {item.format === "video" ? <Video 
+                  ref={video}
+                  style={styles.video2}
+                  source={{
+                  uri: item.videoURI,
+                  }}
+                  resizeMode="cover"
+              />
+              : <Image
+                    style={styles.video2}
+                    source={{uri: item.videoURI}}
+                    //onError={(e) => console.log(e)}
+                    
+              />
+                  }
+            </TouchableOpacity> }  */}
+        
 
 
         </View>
@@ -196,6 +272,13 @@ export default function viewAlbumScreen({route, navigation}) {
       numColumns={2}
       keyExtractor={(item, index) => index}
     />
+
+    {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={() => setModalVisible(true)}>
+              <Image 
+              source={require('../assets/createAlbumBtn.png')}
+              style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
+              />
+          </TouchableOpacity>}
 
 
     </ScrollView>
@@ -236,5 +319,75 @@ const styles = StyleSheet.create({
   albumTitle: {
     justifyContent: 'center',
     alignSelf: 'center',
+  },
+  backgroundImage : {
+    width: widths,
+  }, 
+  rowButtons: {
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-around',
+    marginTop: 16,
+  },
+  rowPopup: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  info: {
+    marginLeft: 30,
+    marginTop: 50,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.7)',
+  },
+  modalView: {
+    margin: 80,
+    width: 306,
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 5,
+    marginLeft: 26,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "grey",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  buttonGreyClose: {
+    backgroundColor: "#5B5B5B",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 86,
+  },
+  modalTextTitle: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalSubText: {
+    marginBottom: 20,
+    textAlign: "center",
   }
 });
