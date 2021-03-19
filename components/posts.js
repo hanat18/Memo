@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, TouchableWithoutFeedback, Text, Image, TouchableOpacity, Modal, Button, SafeAreaView } from 'react-native';
+import {View, TouchableWithoutFeedback, Text, Image, TouchableOpacity, Modal, Button, SafeAreaView, Alert } from 'react-native';
 import {StyleSheet, Dimensions} from 'react-native';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { useReducer } from 'react';
@@ -21,40 +21,10 @@ const Post = (props) => {
     return (
         <View style={styles.container}>
 
-       {props.children.triggerWarning != 0 && <Modal
-        animationType="slide"
-        // transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
-          setModalVisible(!modalVisible);
-        }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTextTitle}>Trigger Warning!</Text>
-            <Text style={styles.modalSubText}>This Memo has been assigned a trigger warning of level {props.children.triggerWarning}. Would you like to view the Memo?</Text>
-            <View style={styles.rowPopup}> 
-            {/* <TouchableOpacity
-              style={[styles.button, styles.buttonGreyClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle} onPress={setModalVisible(!modalVisible)}>View Memo</Text>
-              
-            </TouchableOpacity> */}
-            </View>
+        <TouchableWithoutFeedback onPress={() => {setIsPlaying(!isPlaying)}} >
+          <View style={{justifyContent: 'center'}}>
 
-          </View>
-        </View>
-      </Modal> }
-
-        <TouchableWithoutFeedback style={{justifyContent: 'center'}} onPress={() => {status.isPlaying && video != null ? video.current.pauseAsync() : video.current.playAsync()}} >
+         
               {props.children.format === "video" ? <Video 
                   ref={video}
                   style={styles.video}
@@ -72,9 +42,12 @@ const Post = (props) => {
               />
                   }
 
-              
 
-          </TouchableWithoutFeedback>
+
+            
+
+          
+          
           <View style={styles.uiContainer}>
             <TouchableOpacity activeOpacity={0.5} onPress={() => {setIsPlaying(!isPlaying)}}>
               <Image
@@ -84,6 +57,10 @@ const Post = (props) => {
               />
           </TouchableOpacity>
           </View>
+
+            </View> 
+          </TouchableWithoutFeedback>
+          
           
                 
           

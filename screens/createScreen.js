@@ -8,6 +8,7 @@ import { TouchableOpacity } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import { DropDownPicker} from 'react-native-dropdown-picker';
 import Post from '../components/posts';
+import Select2 from "react-native-select-two"
 
 const styles = StyleSheet.create({
   container: {
@@ -46,8 +47,81 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     width: (Dimensions.get('window').width)/2 - 8,
     height: 200,
-  },       
+  },  
+  rowButtons: {
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-around',
+    marginTop: 16,
+  },
+  rowPopup: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  info: {
+    marginLeft: 30,
+    marginTop: 50,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: 'rgba(0,0,0,0.7)',
+  },
+  modalView: {
+    margin: 80,
+    width: 306,
+    backgroundColor: "white",
+    borderRadius: 15,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
+  },
+  button: {
+    borderRadius: 5,
+    marginLeft: 26,
+    padding: 10,
+    elevation: 2
+  },
+  buttonOpen: {
+    backgroundColor: "grey",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  buttonGreyClose: {
+    backgroundColor: "#5B5B5B",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 86,
+  },
+  modalTextTitle: {
+    marginBottom: 15,
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  modalSubText: {
+    marginBottom: 20,
+    textAlign: "center",
+  }     
 });
+
+const mockData = [
+  { id: 1, name: "React Native Developer"}, // set default checked for render option item
+  { id: 2, name: "Android Developer" },
+  { id: 3, name: "iOS Developer" }
+]
 
 export default function CreateScreen({ navigation }) {
   const video = React.useRef(null);
@@ -56,42 +130,49 @@ export default function CreateScreen({ navigation }) {
   const [currTrigger, setCurrTrigger] = useState(0);
   const [selectedLanguage, setSelectedLanguage] = useState();
   const [objectType, setObjectType] = useState();
-  const [albums, setAlbums] = useState();
+  const [albums, setAlbums] = useState([]);
   const [isPicked, setIsPicked] = useState(false);
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('focus', () => {
-  //     //console.log("I am focused");
-  //     const loadData =  async () => {
-  //       var keys; 
-  //       var tempObj = {};
-  //       var albumArray = [];
-  //       try {
-  //         var result = await AsyncStorage.getItem("albums");
-  //         albumArray = JSON.parse(result);
-  //         console.log("The Albums in this page", albumArray);
-  //       } catch{}
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState();
 
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log("I am focused");
+      const loadData =  async () => {
+        var keys; 
+        var tempObj = {};
+        var albumArray = [];
+        var albumNames = [];
+        try {
+          var result = await AsyncStorage.getItem("albums");
+          albumArray = JSON.parse(result);
+          console.log("The Albums in this page", albumArray);
+          for(var i = 0; i < albumArray.length; i++ ) {
+            var tempAlbum = {
+              id: albumArray[i][0],
+              name: albumArray[i][0]
+            }
 
-  //       if (albumArray.length != 0) {
-  //         for (var i = 0; i < albumArray.length; i++ ) {
-  //           albumArray.push(albumArray[i][0]);
-  //         }
+            albumNames.push(tempAlbum)
+          }
+        } catch{}
 
-  //         setAlbums(items);
-  //         console.log("I'm getting the albums", items);
+
+
+          setAlbums(albumNames);
+          console.log("I'm getting the albums", albums);
           
-  //       }
+        // }
           
-  //     }
+      }
 
-  //     loadData();
+      loadData();
 
 
-  //   });
-  //   return unsubscribe;
-  // }, [navigation]);
+    });
+    return unsubscribe;
+  }, [navigation]);
   
   useEffect(() => {
     // setIsPicked(false);
@@ -127,17 +208,71 @@ export default function CreateScreen({ navigation }) {
     
     try {
       
-      console.log("Video? ", image.format)
-      await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger, []]));
+      // console.log("Video? ", image.format)
+      console.log("Selected", selectedOptions.data);
+      // if (selectedOptions.keys(empty).length === 0 && empty.constructor === Object) {
+      //   console.log("Oder here")
+      //   await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger, []]));
+
+      // } else {
+      //   console.log("Here", selectedOption.data);
+      //   await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger, selectedOption.data]));
+      // }
+      await AsyncStorage.setItem(image, JSON.stringify([image, objectType, currTrigger, selectedOptions.data]));
       Alert.alert("Success! \n You have successfully uploaded your Memo.");
-      navigation.navigate('HomeTab');
       setIsPicked(false);
     } catch {}
+
+    navigation.navigate('HomeTab');
 
   }
 
   return (
     <ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        // backgroundImage={!modalVisible && require('../assets/blur.png')}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTextTitle}>Are you sure?</Text>
+            <Text style={styles.modalSubText}>You're about to remove these memos from the album</Text>
+              <Picker
+                  style={{paddingBottom: 0}}
+                  selectedValue={selectedLanguage}
+                  onValueChange={(itemValue, itemIndex) =>
+                    setSelectedLanguage(itemValue)
+                  }>
+              <Picker.Item value="album1" label="Comfort Album" />
+              <Picker.Item value="albu2" label="Favorite Album" />
+              <Picker.Item value="albu3" label="Family and Friends Album" />
+            </Picker>
+            <View style={styles.rowPopup}> 
+            <TouchableOpacity
+              style={[styles.button, styles.buttonGreyClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.buttonClose]}
+              
+            >
+              <Text style={styles.textStyle}>Delete</Text>
+              
+            </TouchableOpacity>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
       <View>
         <Text style={styles.title}> Create A Memo</Text>
         <Text style={styles.subtitle}> Upload a Media</Text>
@@ -187,7 +322,7 @@ export default function CreateScreen({ navigation }) {
       </TouchableOpacity>
 
       <Text style={styles.subtitle}> Pick an Album</Text>
-      <Picker
+      {/* <Picker
         style={{paddingBottom: 0}}
         selectedValue={selectedLanguage}
         onValueChange={(itemValue, itemIndex) =>
@@ -196,7 +331,34 @@ export default function CreateScreen({ navigation }) {
         <Picker.Item value="album1" label="Comfort Album" />
         <Picker.Item value="albu2" label="Favorite Album" />
         <Picker.Item value="albu3" label="Family and Friends Album" />
-      </Picker>
+      </Picker> */}
+
+      {/* <TouchableOpacity activeOpacity={0.5} onPress={() => setModalVisible(true)}>
+                <Image
+                source={require('../assets/narrationImage.png')}
+                style={{alignSelf: 'center', paddingBottom: 8}}
+                />
+            </TouchableOpacity> */}
+
+    <Select2
+              style={{ borderRadius: 5 }}
+              colorTheme="#3AA1F6"
+
+              popupTitle="Add Memo to your Albums"
+              title="Select Albums"
+              listEmptyTitle="You currently have no albums."
+              cancelButtonText="Cancel"
+              selectButtonText="Confirm"
+              searchPlaceHolderText="Search for Albums"
+              data={albums}
+              onSelect={data => {
+                setSelectedOptions({ data })
+                
+              }}
+              onRemoveItem={data => {
+                setSelectedOptions({ data })
+              }}
+            />
 
       </View>
       <View>
@@ -230,6 +392,24 @@ export default function CreateScreen({ navigation }) {
           style={{alignSelf: 'center', marginTop: 26,}}
           onPress={goHomeScreen}
           />
+      
+      
+
+        
+      </TouchableOpacity>
+      </View>}
+
+      {!isPicked && <View style={{marginTop: 8}}>
+      <TouchableOpacity activeOpacity={0.5} onPress={() => {Alert.alert("You must select a photo or video!")}}>
+          <Image
+          source={require('../assets/createGrey.png')}
+          style={{alignSelf: 'center', marginTop: 26,}}
+          onPress={goHomeScreen}
+          />
+      
+      
+
+        
       </TouchableOpacity>
       </View>}
     </ScrollView>

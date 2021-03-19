@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { Video, AVPlaybackStatus } from 'expo-av';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import parseErrorStack from 'react-native/Libraries/Core/Devtools/parseErrorStack';
 
 let { widths } = Dimensions.get('window').width - 180;
 
@@ -69,7 +70,7 @@ export default function viewAlbumScreen({route, navigation}) {
                 finalArray.push(tempObj);
               }
               // //Dynamically creates a "toRender" object and stores it in state
-              // postObj[tempObj.id] = true;
+              postObj[tempObj.id] = false;
               
               // finalArray.push(tempObj);
               }
@@ -80,6 +81,7 @@ export default function viewAlbumScreen({route, navigation}) {
         }
   
         setfinishLoading(true);
+        setPressedTracker(postObj);
         setTotalMemos(finalArray.length);
         setToRender(finalArray);
         console.log("toRender", finalArray);
@@ -125,7 +127,7 @@ export default function viewAlbumScreen({route, navigation}) {
 
     const deleteMemos =  async () => {
 
-      Alert.alert("Are you sure you want to delete?")
+      setModalVisible(!modalVisible)
       var toDelete = [];
 
       for (const property in pressedTracker) {
@@ -133,6 +135,89 @@ export default function viewAlbumScreen({route, navigation}) {
           toDelete.push(property);
         }
       }
+
+      console.log("On the chopping block", toDelete);
+
+      //2 steps
+      //RUpdate the pressed collection
+      //Update memo count 
+      //Remove from Async Storage
+
+      var ourObject = toRender;
+      console.log("Our Object", ourObject);
+
+      var newRender = [];
+      var byeByeId = []
+
+      for (var post in ourObject) {
+        if (!toDelete.includes(ourObject[post]["id"])) {
+          newRender.push(ourObject[post]);
+        } else {
+          byeByeId.push(ourObject[post]["id"]);
+        }
+      }
+
+      console.log("Our new array", newRender);
+
+      setToRender(newRender);
+      setNumSelected(0);
+      setTotalMemos(newRender.length);
+
+      console.log("ByeByeArray", byeByeId)
+
+
+      //Actually delete Memos
+      var keys;
+
+      try {
+        keys = await AsyncStorage.getAllKeys()
+        //console.log("keys", keys)
+      } catch{}
+        
+      //Loops through all keys and retrieves the attaches URIs
+      
+      for (var i = 0; i < keys.length; i++) {
+        let post = keys[i];
+        //console.log("post", post)
+        
+        try {
+          result = await AsyncStorage.getItem(post);
+          var content = JSON.parse(result);
+
+          if (result != null && post != "albums") {
+
+            var updatedAlbumMem = content[3]; 
+      
+              if (byeByeId.includes(post)) {
+                console.log("Old", post, updatedAlbumMem);
+
+
+                // updatedAlbumMem.remove(albumName);
+                var index = updatedAlbumMem.indexOf(albumName);
+                if (index >= 0) {
+                  updatedAlbumMem.splice( index, 1 );
+                }
+                console.log("New", post, updatedAlbumMem);
+
+                
+
+                var newData = [content[0], content[1], content[2], updatedAlbumMem];
+                console.log("Post", post, "to ", newData)
+
+                await AsyncStorage.setItem(post, JSON.stringify(newData));
+
+              }
+
+            }
+          
+        } catch(e){
+          //console.log("ERROR: ", e)
+        }
+      }
+
+
+
+
 
       
     }
@@ -152,11 +237,12 @@ export default function viewAlbumScreen({route, navigation}) {
 
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', borderBottomColor: 'black',
         borderBottomWidth: 1,}} onPress={() => {navigation.navigate("Home");}}>
+       <TouchableOpacity activeOpacity={0.5} onPress={() => Alert.alert("Album feeds coming soon!")}>
       <Image
         source={require("../assets/albumPlay.png")}
         style={styles.albumTitle}
-        onPress={() => console.log("Pressed")}
       />
+      </TouchableOpacity>
       <Text style={{position: 'relative', fontSize: 20, marginTop: 12, marginBottom: 10}}>Play Album Feed</Text>
     </View>
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', flexDirection: 'row', justifyContent: 'flex-start', marginLeft: 40}} onPress={() => {navigation.navigate("Home");}}>
@@ -183,7 +269,7 @@ export default function viewAlbumScreen({route, navigation}) {
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalTextTitle}>Are you sure?</Text>
-            <Text style={styles.modalSubText}>You're about to call your caregiver</Text>
+            <Text style={styles.modalSubText}>You're about to remove these memos from the album</Text>
             <View style={styles.rowPopup}> 
             <TouchableOpacity
               style={[styles.button, styles.buttonGreyClose]}
@@ -193,9 +279,9 @@ export default function viewAlbumScreen({route, navigation}) {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
+              onPress={deleteMemos}
             >
-              <Text style={styles.textStyle} >Call</Text>
+              <Text style={styles.textStyle}>Delete</Text>
               
             </TouchableOpacity>
             </View>
@@ -222,29 +308,24 @@ export default function viewAlbumScreen({route, navigation}) {
             // borderRightWidth: 1,
             // marginTop: 4,
           }}>     
-        {pressedTracker[item.id] === true ? <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: 0.5}}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={{
-                uri: item,
-                }}
-                resizeMode="cover"
-                
-            />
-            </TouchableOpacity>
-            :
-            <TouchableOpacity onPress={() => onPressHandler(item)}>
-            <Video
-                ref={video}
-                style={styles.video}
-                source={{
-                uri: item.videoURI,
-                }}
-                resizeMode="cover"
-                
-            />
-            </TouchableOpacity>}
+            <TouchableOpacity onPress={() => onPressHandler(item)} style={{opacity: op}}>
+
+              {item.format === "video" ? <Video 
+                    ref={video}
+                    style={styles.video}
+                    source={{
+                    uri: item.videoURI,
+                    }}
+                    resizeMode="cover"
+                />
+                : <Image
+                      style={styles.video}
+                      source={{uri: item.videoURI}}
+                      //onError={(e) => console.log(e)}
+        
+                      />
+              }
+</TouchableOpacity> 
 
 
         </View>

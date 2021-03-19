@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
 
 
 export default function finalizeAlbumScreen({route, navigation}){
-    const [title, setTitle] = useState();
+    const [title, setTitle] = useState("");
     const [description, setDescription] = useState();
     const [postsToAdd, setPostsToAdd] = useState(); 
     const { add } = route.params;
@@ -233,14 +233,23 @@ export default function finalizeAlbumScreen({route, navigation}){
           <Text style={styles.subtitle2}> Add Description:</Text>
             <TextInput style={styles.textEntry2} placeholder="album description..." onChangeText={(albumDesc) => {setDescription(albumDesc);}}></TextInput>
             
-            <View>
+            {title.length != 0 && <View>
                 <TouchableOpacity activeOpacity={0.5} onPress={goAlbumScreen}>
                     <Image
                     source={require('../assets/Create.png')}
                     style={{alignSelf: 'center', marginTop: 10,}}
                     />
                 </TouchableOpacity>
-            </View> 
+            </View> }
+
+            {title.length === 0 && <View>
+                <TouchableOpacity activeOpacity={0.5} onPress={() => {Alert.alert("You must type in an album title!")}}>
+                    <Image
+                    source={require('../assets/createGrey.png')}
+                    style={{alignSelf: 'center', marginTop: 10,}}
+                    />
+                </TouchableOpacity>
+            </View> }
             </View>
                 
         </SafeAreaView>

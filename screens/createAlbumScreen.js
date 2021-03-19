@@ -196,7 +196,14 @@ export default function createAlbumScreen({navigation}) {
 
     {isPressed !== 0 && <TouchableOpacity activeOpacity={0.5} onPress={goToNextScreen}>
           <Image 
-          source={require('../assets/createAlbumBtn.png')}
+          source={require('../assets/addSelected.png')}
+          style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
+          />
+      </TouchableOpacity>}
+
+      {isPressed === 0 && <TouchableOpacity activeOpacity={0.5} onPress={() => {Alert.alert("Select at least one memo!")}}>
+          <Image 
+          source={require('../assets/addSelectedGrey.png')}
           style={{alignSelf: 'center', marginTop: 20, marginBottom: 20}}
           />
       </TouchableOpacity>}

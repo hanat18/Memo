@@ -34,6 +34,8 @@ const styles = StyleSheet.create({
   info: {
     marginLeft: 30,
     marginTop: 50,
+    height: 250,
+    width: 350,
   },
   centeredView: {
     flex: 1,
